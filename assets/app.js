@@ -20,6 +20,9 @@ if (HAS_GSAP) gsap.registerPlugin(ScrollTrigger);
 
 const byId = Object.fromEntries(PROJECTS.map(p => [p.id, p]));
 const FEATURED = ["bloodbank", "lims", "vendora", "rms", "nexus", "futurespace"];
+/* the systems that get a full row in the index; everything else is mentioned
+   as a chip below them */
+const HEADLINE = ["bloodbank", "lims", "hmis", "vendora", "rms", "listen", "nexus", "futurespace"];
 
 /* ============================================================ SMOOTH SCROLL
    Lenis-style: intercept the wheel, lerp toward a target, and drive the REAL
@@ -241,21 +244,61 @@ function buildShowcase() {
 /* ============================================================== INDEX LIST */
 function buildIndex() {
   const host = $("#idx");
-  let n = 0;
-  host.innerHTML = ["A", "B", "C", "D", "E"].map(k => {
-    const items = PROJECTS.filter(p => p.reg === k);
-    if (!items.length) return "";
-    return `<div class="idxgroup">Register ${k} — ${REGISTERS[k].title}</div>` +
-      items.map(p => {
-        n++;
-        return `<button class="row" data-open="${p.id}" data-peek="${p.id}" data-cursor="Open">
-            <span class="row__n">${String(n).padStart(2, "0")}</span>
-            <span class="row__name">${p.name}</span>
-            <span class="row__meta">${esc(p.stack.slice(0, 2).join(" · "))}</span>
-            ${stampHTML(p)}
-          </button>`;
-      }).join("");
-  }).join("");
+  const head = new Set(HEADLINE);
+  const lead = HEADLINE.map(id => byId[id]).filter(Boolean);
+  const rest = PROJECTS.filter(p => !head.has(p.id));
+
+  const rows = lead.map((p, i) => `
+      <button class="row" data-open="${p.id}" data-peek="${p.id}" data-cursor="Open">
+        <span class="row__n">${String(i + 1).padStart(2, "0")}</span>
+        <span class="row__name">${p.name}</span>
+        <span class="row__meta">${esc(p.stack.slice(0, 2).join(" · "))}</span>
+        ${stampHTML(p)}
+      </button>`).join("");
+
+  const regs = ["A", "B", "C", "D", "E"].filter(k => rest.some(p => p.reg === k));
+  const filters = `<button aria-pressed="true" data-reg="">All<b>${rest.length}</b></button>` +
+    regs.map(k => `<button aria-pressed="false" data-reg="${k}">${esc(REGISTERS[k].title)}<b>${
+      rest.filter(p => p.reg === k).length}</b></button>`).join("");
+
+  const chips = rest.map(p => `
+      <button class="chip" data-open="${p.id}" data-reg="${p.reg}" data-cursor="Open"
+              aria-label="${esc(p.name)} — ${esc(p.tag)}">
+        <span class="chip__dot tone--${STATUS[p.status].tone}" aria-hidden="true"></span>
+        <span class="chip__name">${p.name}</span>
+        <span class="chip__more" aria-hidden="true">
+          <span class="chip__tag">${esc(p.tag)}</span>
+          <span class="chip__stack">${esc(p.stack.slice(0, 3).join(" · "))}</span>
+        </span>
+        <span class="chip__arrow" aria-hidden="true">&#8594;</span>
+      </button>`).join("");
+
+  host.innerHTML = rows + `
+    <div class="also">
+      <div class="also__head">
+        <div>
+          <span class="also__k">Also on the record · ${rest.length} more</span>
+          <div class="also__t">Smaller builds, <em>same care.</em></div>
+        </div>
+        <div class="filt" id="alsoFilt" role="group" aria-label="Filter by register">${filters}</div>
+      </div>
+      <div class="chips-grid" id="alsoGrid">${chips}</div>
+    </div>`;
+
+  const num = $("#idxCount");
+  if (num) num.textContent = `Full index · ${lead.length} headline · ${PROJECTS.length} systems`;
+
+  /* register filter: dims everything that doesn't match, keeps the layout */
+  const filt = $("#alsoFilt"), grid = $("#alsoGrid");
+  filt.addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-reg]"); if (!b) return;
+    const k = b.dataset.reg;
+    $$("button", filt).forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $$(".chip", grid).forEach(c => {
+      if (!k || c.dataset.reg === k) c.removeAttribute("data-off");
+      else c.setAttribute("data-off", "");
+    });
+  });
 }
 
 /* floating preview that trails the cursor over the index */
@@ -266,7 +309,8 @@ function wirePeek() {
 
   $("#idx").addEventListener("pointerover", ev => {
     const row = ev.target.closest("[data-peek]");
-    if (!row) return;
+    /* chips unfold their own summary inline, so the preview only follows rows */
+    if (!row) { if (on) { peek.classList.remove("is-on"); on = false; } return; }
     const p = byId[row.dataset.peek];
     const shot = p.shots[0];
     peek.innerHTML = shot
@@ -416,8 +460,12 @@ const drawer = { open: false };
 function drawerHTML(p) {
   const shots = p.shots.length ? `
     <div>
-      <div class="dlabel">Screens · ${p.shots.length} from the running app</div>
-      <div class="shots" id="dshots">${p.shots.map((s, i) => `
+      <div class="dlabel">Screens · ${p.shots.length} from the running app
+        <span class="shots__nav" aria-hidden="true">
+          <button type="button" data-sh="-1" aria-label="Previous screen">&#8592;</button>
+          <button type="button" data-sh="1" aria-label="Next screen">&#8594;</button>
+        </span></div>
+      <div class="shots" id="dshots" tabindex="0" aria-label="Screenshots — scroll sideways, drag, or use the arrows">${p.shots.map((s, i) => `
         <figure data-pid="${p.id}" data-i="${i}" data-cursor="View">
           <img src="${s.src}" alt="${esc(s.cap)}" loading="lazy" decoding="async">
           <figcaption>${esc(s.cap)}</figcaption>
@@ -642,6 +690,93 @@ function closePalette() {
 
 /* ================================================================ LIGHTBOX */
 const lb = { open: false, shots: [], i: 0, title: "" };
+/* ------------------------------------------------ screenshot strip
+   A sideways strip inside a vertical drawer: the wheel steers it sideways
+   while it still has room to move, it can be dragged, and the arrows step
+   one screen at a time. Click and drag are told apart by distance. */
+const strip = { dragged: false, target: null, anim: false, el: null };
+const stripMax = el => Math.max(0, el.scrollWidth - el.clientWidth);
+/* glide toward a target instead of jumping, so a wheel tick feels like the
+   strip is carrying itself along */
+function stripGlide(el, to) {
+  strip.el = el;
+  strip.target = clamp(to, 0, stripMax(el));
+  if (REDUCED) { el.scrollLeft = strip.target; return; }
+  if (strip.anim) return;
+  strip.anim = true;
+  /* snapping fights a frame-by-frame scroll (it pulls each step back to the
+     nearest snap point), so it is switched off for the duration */
+  el.classList.add("is-glide");
+  let frames = 0;
+  const done = () => { strip.anim = false; if (strip.el) strip.el.classList.remove("is-glide"); };
+  (function frame() {
+    if (!strip.el || !strip.el.isConnected || strip.target === null) { done(); return; }
+    const cur = strip.el.scrollLeft, next = cur + (strip.target - cur) * 0.16;
+    if (Math.abs(strip.target - cur) < 0.6 || ++frames > 240) { strip.el.scrollLeft = strip.target; done(); return; }
+    strip.el.scrollLeft = next;
+    requestAnimationFrame(frame);
+  })();
+}
+function stepShots(dir) {
+  const el = $("#dshots"); if (!el) return;
+  const fig = el.querySelector("figure");
+  const w = fig ? fig.getBoundingClientRect().width + 12 : el.clientWidth * .8;
+  const from = strip.anim && strip.el === el ? strip.target : el.scrollLeft;
+  stripGlide(el, from + dir * w);
+}
+function wireShots() {
+  const body = $("#dbody"); if (!body) return;
+
+  /* capture phase so the strip sees the wheel before the drawer body does */
+  body.addEventListener("wheel", ev => {
+    const el = ev.target.closest("#dshots"); if (!el) return;
+    if (ev.ctrlKey) return;
+    let d = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY;
+    if (ev.deltaMode === 1) d *= 40; else if (ev.deltaMode === 2) d *= el.clientWidth;
+    const max = stripMax(el);
+    if (max <= 0) return;
+    const from = strip.anim && strip.el === el ? strip.target : el.scrollLeft;
+    const canGo = d > 0 ? from < max - 1 : from > 1;
+    if (!canGo) return;                     // at the end: let the drawer scroll on
+    ev.preventDefault();
+    ev.stopPropagation();
+    stripGlide(el, from + d * 1.4);
+  }, { passive: false, capture: true });
+
+  let down = null;
+  body.addEventListener("pointerdown", ev => {
+    const el = ev.target.closest("#dshots"); if (!el || ev.button !== 0) return;
+    strip.target = null;                        // a hand on the strip cancels any glide
+    down = { el, x: ev.clientX, left: el.scrollLeft, id: ev.pointerId };
+    strip.dragged = false;
+  });
+  body.addEventListener("pointermove", ev => {
+    if (!down || ev.pointerId !== down.id) return;
+    const dx = ev.clientX - down.x;
+    if (!strip.dragged && Math.abs(dx) > 6) {
+      strip.dragged = true;
+      down.el.classList.add("is-drag");
+      down.el.setPointerCapture(ev.pointerId);
+    }
+    if (strip.dragged) down.el.scrollLeft = down.left - dx;
+  });
+  const up = ev => {
+    if (!down) return;
+    down.el.classList.remove("is-drag");
+    down = null;
+    /* leave `dragged` set for the click that follows a drag, then clear it */
+    setTimeout(() => { strip.dragged = false; }, 0);
+  };
+  body.addEventListener("pointerup", up);
+  body.addEventListener("pointercancel", up);
+
+  body.addEventListener("keydown", ev => {
+    if (!ev.target.closest("#dshots")) return;
+    if (ev.key === "ArrowRight") { ev.preventDefault(); stepShots(1); }
+    if (ev.key === "ArrowLeft")  { ev.preventDefault(); stepShots(-1); }
+  });
+}
+
 function openLightbox(pid, i) {
   const p = byId[pid]; if (!p || !p.shots.length) return;
   Object.assign(lb, { open: true, shots: p.shots, i, title: p.name });
@@ -754,9 +889,12 @@ function init() {
     if (anchor) { ev.preventDefault(); jump(anchor.getAttribute("href").slice(1)); return; }
     const open = ev.target.closest("[data-open]");
     if (open) { openDrawer(open.dataset.open); return; }
+    const nav = ev.target.closest("[data-sh]");
+    if (nav) { stepShots(+nav.dataset.sh); return; }
     const fig = ev.target.closest("#dshots figure");
-    if (fig) { openLightbox(fig.dataset.pid, +fig.dataset.i); return; }
+    if (fig) { if (!strip.dragged) openLightbox(fig.dataset.pid, +fig.dataset.i); return; }
   });
+  wireShots();
 
   $("#theme").addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
   $$("[data-copy]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.copy, b)));

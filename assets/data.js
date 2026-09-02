@@ -72,11 +72,11 @@ const PROJECTS = [
     ],
     stack: ["Django", "Python", "MySQL", "Class-based views", "Custom auth model"],
     shots: [
+      { src: "assets/img/lims.jpg",           cap: "Protected workspace · sign-in" },
       { src: "assets/img/lims-dashboard.jpg", cap: "Laboratory overview · sample workflow" },
       { src: "assets/img/lims-families.jpg",  cap: "Family register · pedigrees" },
       { src: "assets/img/lims-samples.jpg",   cap: "Sample tracking · status pipeline" },
       { src: "assets/img/lims-disorders.jpg", cap: "Disorder dictionary" },
-      { src: "assets/img/lims.jpg",           cap: "Protected workspace · sign-in" },
     ],
   },
   {
