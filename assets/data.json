@@ -1,0 +1,1277 @@
+{
+ "PROJECTS": [
+  {
+   "id": "bloodbank",
+   "reg": "A",
+   "status": "production",
+   "domain": "health",
+   "weight": 3,
+   "name": "Blood Bank Management System",
+   "code": "RBC · MIRPUR AJK",
+   "tag": "Donor-to-recipient traceability for a regional blood centre",
+   "blurb": "End-to-end traceability for a regional blood centre: from donor registration and mobilisation drives, through collection, serological screening and component processing, to cross-matched issue at the ward. Every bag carries an audit trail from the arm it came from to the patient it reached.",
+   "spec": [
+    [
+     "Deployed",
+     "Regional Blood Centre (RBC), Mirpur, Azad Kashmir"
+    ],
+    [
+     "Role",
+     "Forward deployed engineer &amp; developer"
+    ],
+    [
+     "Built to",
+     "The centre's departmental manuals — mobilisation, collection, medical officer, processing, serology, distribution, and the blood bank KPI set"
+    ]
+   ],
+   "stack": [
+    "ASP.NET Core 8 MVC",
+    "C#",
+    "Entity Framework Core",
+    "SQL Server",
+    "Razor"
+   ],
+   "modules": {
+    "title": "Shipped modules",
+    "count": "11 controllers",
+    "items": [
+     [
+      "Donors",
+      "Registry & eligibility"
+     ],
+     [
+      "Donations",
+      "Collection events"
+     ],
+     [
+      "Blood Bags",
+      "Inventory & expiry"
+     ],
+     [
+      "Blood Test Reports",
+      "Serology screening"
+     ],
+     [
+      "Transfusions",
+      "Issue & cross-match"
+     ],
+     [
+      "Patients",
+      "Recipient records"
+     ],
+     [
+      "Administration",
+      "Users & roles"
+     ],
+     [
+      "Audit Logs",
+      "Chain of custody"
+     ],
+     [
+      "Modules",
+      "Feature control"
+     ],
+     [
+      "Account",
+      "Authentication"
+     ],
+     [
+      "Home",
+      "Operations dashboard"
+     ]
+    ]
+   },
+   "shots": []
+  },
+  {
+   "id": "lims",
+   "reg": "A",
+   "status": "production",
+   "domain": "health",
+   "weight": 2.8,
+   "name": "Neurogenetics Research LIMS",
+   "code": "QAU · GENETICS",
+   "tag": "Pedigree-aware laboratory tracking for translational genetics",
+   "blurb": "A laboratory information management system for translational genetics. Families are modelled as real pedigrees — individuals, relationships, probands — so a sample is never just a barcode but a person inside an inheritance pattern. Tracks samples through extraction and sequencing, records variants against a disorder dictionary, and exports family data for analysis.",
+   "spec": [
+    [
+     "Built for",
+     "Genetics labs, Quaid-e-Azam University · originally commissioned by Prof. Sundas Farooq"
+    ],
+    [
+     "Core",
+     "Pedigree graph, sample workflow states, variant calls, stored file vault, disorder reference"
+    ],
+    [
+     "Notable",
+     "Interactive pedigree renderer driven from live relationship data"
+    ]
+   ],
+   "stack": [
+    "Django",
+    "Python",
+    "MySQL",
+    "Class-based views",
+    "Custom auth model"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lims-dashboard.jpg",
+     "cap": "Laboratory overview · sample workflow"
+    },
+    {
+     "src": "assets/img/lims-families.jpg",
+     "cap": "Family register · pedigrees"
+    },
+    {
+     "src": "assets/img/lims-samples.jpg",
+     "cap": "Sample tracking · status pipeline"
+    },
+    {
+     "src": "assets/img/lims-disorders.jpg",
+     "cap": "Disorder dictionary"
+    },
+    {
+     "src": "assets/img/lims.jpg",
+     "cap": "Protected workspace · sign-in"
+    }
+   ]
+  },
+  {
+   "id": "hmis",
+   "reg": "A",
+   "status": "production",
+   "domain": "health",
+   "weight": 2.6,
+   "name": "DHQ Hospital Management System",
+   "code": "DHQ · MIRPUR AJK",
+   "tag": "Hospital-wide information system across 18 functional areas",
+   "blurb": "Contributed to the hospital-wide information system for the District Headquarters Hospital — a multi-area ASP.NET application covering the clinical, diagnostic, pharmacy and finance sides of the hospital under one roof.",
+   "spec": [
+    [
+     "Deployed",
+     "DHQ Hospital, Mirpur, Azad Kashmir"
+    ],
+    [
+     "Role",
+     "Contributing developer — backend and data layer"
+    ],
+    [
+     "Scale",
+     "18 functional areas across clinical, diagnostic and financial operations"
+    ]
+   ],
+   "stack": [
+    "ASP.NET MVC",
+    "C#",
+    "MS SQL Server",
+    "Areas architecture"
+   ],
+   "modules": {
+    "title": "Functional areas",
+    "count": "18 modules",
+    "items": [
+     [
+      "Dashboard"
+     ],
+     [
+      "Appointments"
+     ],
+     [
+      "Doctor"
+     ],
+     [
+      "Patient History"
+     ],
+     [
+      "Vital"
+     ],
+     [
+      "Specimen"
+     ],
+     [
+      "Labs"
+     ],
+     [
+      "Medicine"
+     ],
+     [
+      "Pharmacy"
+     ],
+     [
+      "Accounts"
+     ],
+     [
+      "Finance"
+     ],
+     [
+      "Individual Package"
+     ],
+     [
+      "Working Sessions"
+     ],
+     [
+      "Performance"
+     ],
+     [
+      "Building"
+     ],
+     [
+      "Country"
+     ],
+     [
+      "Province & City"
+     ],
+     [
+      "Configuration"
+     ]
+    ]
+   },
+   "shots": []
+  },
+  {
+   "id": "vendora",
+   "reg": "A",
+   "status": "pilot",
+   "domain": "retail",
+   "weight": 3,
+   "name": "Vendora — POS, Inventory & Accounts",
+   "code": "VENDORA",
+   "tag": "Retail platform where the till and the books are the same system",
+   "blurb": "A retail platform that refuses to separate the till from the books. Barcode checkout, purchase orders, expenses and party ledgers all post into one double-entry accounting core, so the trial balance and profit &amp; loss are generated from actual sales rather than re-keyed at month end. GST is applied automatically from the product category matrix and locked from settings so cashiers cannot drift the tax.",
+   "spec": [
+    [
+     "Built for",
+     "Grocery, pharmacy, electronics and garment retailers"
+    ],
+    [
+     "Accounting",
+     "Trial balance · profit &amp; loss · balance sheet · account ledgers · party statements"
+    ],
+    [
+     "Operations",
+     "POS checkout, stock control, purchases, expenses, multi-user roles, backups"
+    ]
+   ],
+   "stack": [
+    "Django",
+    "Python",
+    "SQLite / PostgreSQL",
+    "Thermal receipts",
+    "Barcode scanning",
+    "Email verification"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/pos-screen.jpg",
+     "cap": "POS checkout · scan, cart, GST"
+    },
+    {
+     "src": "assets/img/pos-dashboard.jpg",
+     "cap": "Operations dashboard"
+    },
+    {
+     "src": "assets/img/pos-trial-balance.jpg",
+     "cap": "Trial balance · double entry"
+    },
+    {
+     "src": "assets/img/pos-profit-loss.jpg",
+     "cap": "Profit & loss statement"
+    },
+    {
+     "src": "assets/img/pos-products.jpg",
+     "cap": "Product catalogue & stock"
+    },
+    {
+     "src": "assets/img/pos-reports.jpg",
+     "cap": "Reports centre"
+    },
+    {
+     "src": "assets/img/pos-purchases.jpg",
+     "cap": "Purchases & suppliers"
+    },
+    {
+     "src": "assets/img/pos-parties.jpg",
+     "cap": "Parties & ledgers"
+    },
+    {
+     "src": "assets/img/pos-ims.jpg",
+     "cap": "Product landing page"
+    }
+   ]
+  },
+  {
+   "id": "rms",
+   "reg": "A",
+   "status": "delivered",
+   "domain": "retail",
+   "weight": 2.7,
+   "name": "Restaurant Management System",
+   "code": "RMS",
+   "tag": "Front of house and back office in one system",
+   "blurb": "Front of house and back office in one system. A touch-first order screen handles dine-in, takeaway and delivery, fires KOTs straight to a kitchen display, and settles against table state — while the back office keeps recipes, inventory depletion, staff shifts, purchases and the accounts ledger in step behind it.",
+   "spec": [
+    [
+     "Front of house",
+     "Order screen, bill list, kitchen queue, table map, fast cash"
+    ],
+    [
+     "Back office",
+     "Menu &amp; categories, inventory, staff, purchases, expenses, accounts, reports"
+    ],
+    [
+     "Interface",
+     "Built for touchscreen terminals and a separate kitchen display"
+    ]
+   ],
+   "stack": [
+    "Django",
+    "Django REST Framework",
+    "Python",
+    "SQLite",
+    "KDS"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/rms-pos.jpg",
+     "cap": "Order screen · dine-in / takeaway / delivery"
+    },
+    {
+     "src": "assets/img/rms-kitchen.jpg",
+     "cap": "Kitchen display · KOT queue"
+    },
+    {
+     "src": "assets/img/rms-tables.jpg",
+     "cap": "Table map & service state"
+    },
+    {
+     "src": "assets/img/rms-dashboard.jpg",
+     "cap": "Back office dashboard"
+    },
+    {
+     "src": "assets/img/rms-inventory.jpg",
+     "cap": "Inventory & depletion"
+    },
+    {
+     "src": "assets/img/rms-products.jpg",
+     "cap": "Menu & recipes"
+    },
+    {
+     "src": "assets/img/rms-accounts.jpg",
+     "cap": "Accounts & ledgers"
+    }
+   ]
+  },
+  {
+   "id": "listen",
+   "reg": "B",
+   "status": "development",
+   "domain": "ai",
+   "weight": 2.8,
+   "name": "Store Listen — Retail Conversation Intelligence",
+   "code": "STORE LISTEN",
+   "tag": "Live transcription, translation and coaching from the shop floor",
+   "blurb": "Records in-store customer conversations, transcribes and translates them live across English, Spanish, French and Urdu, and turns them into coaching for the shop owner. A slang vocabulary teaches the system how customers actually talk; compliance rules attach a dollar value to every missed action. All text is PII-redacted before it reaches a model.",
+   "spec": [
+    [
+     "Engines",
+     "Browser Web Speech API for instant words, or chunked cloud STT for any browser"
+    ],
+    [
+     "Security",
+     "Provider keys AES-256-GCM encrypted at rest, never returned to the browser"
+    ],
+    [
+     "Output",
+     "Live coaching, owner dashboard, daily report, custom metrics and flags"
+    ]
+   ],
+   "stack": [
+    "Next.js 16",
+    "React 19",
+    "TypeScript",
+    "Zod contracts",
+    "SQLite",
+    "IndexedDB",
+    "Gemini / OpenAI / Ollama",
+    "Vitest"
+   ],
+   "modules": {
+    "title": "Workspace boundaries",
+    "count": "Monorepo",
+    "items": [
+     [
+      "apps/web",
+      "Recorder, dashboard, reports"
+     ],
+     [
+      "apps/api",
+      "Auth, providers, persistence"
+     ],
+     [
+      "packages/contracts",
+      "Versioned Zod schemas"
+     ],
+     [
+      "Vocabulary",
+      "Slang & mis-hearing map"
+     ],
+     [
+      "Compliance rules",
+      "Trigger → expected action"
+     ],
+     [
+      "Analytics rules",
+      "Guidelines, metrics, flags"
+     ]
+    ]
+   },
+   "shots": []
+  },
+  {
+   "id": "nexus",
+   "reg": "B",
+   "status": "development",
+   "domain": "ai",
+   "weight": 2.4,
+   "name": "Nexus AI — Market Impact Intelligence",
+   "code": "NEXUS AI",
+   "tag": "OSINT event classification and market impact forecasting",
+   "blurb": "An OSINT monitoring grid that ingests open-source event feeds, classifies them, and forecasts market impact across macro, crypto and foreign exchange. Built as a Django event engine behind a Next.js intelligence dashboard with live regime read-outs and alerting.",
+   "spec": [
+    [
+     "Pipeline",
+     "Feed ingest → event engine → classifier → analytics → impact forecast"
+    ],
+    [
+     "Surface",
+     "Intelligence, Markets, Alerts and Settings workspaces"
+    ]
+   ],
+   "stack": [
+    "Django",
+    "Next.js",
+    "Recharts",
+    "Tailwind",
+    "Python classifiers"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/nexus-clean.jpg",
+     "cap": "Intelligence grid · market regime"
+    },
+    {
+     "src": "assets/img/nexus-dashboard.jpg",
+     "cap": "Live feeds & sync state"
+    }
+   ]
+  },
+  {
+   "id": "uniai",
+   "reg": "B",
+   "status": "development",
+   "domain": "ai",
+   "weight": 2.2,
+   "name": "University AI",
+   "code": "UNIVERSITY AI",
+   "tag": "Self-hostable AI platform for university communities",
+   "blurb": "Self-hostable, provider-neutral AI platform for university communities. A modular monolith — API, web portal and worker deploy independently while Postgres, Redis and inference stay replaceable. Persisted RBAC, streaming chat through an Ollama gateway, audit records and a containerised local stack.",
+   "spec": [
+    [
+     "Shape",
+     "Modular monolith; API, portal and worker independently deployable"
+    ],
+    [
+     "Control plane",
+     "Persisted RBAC, audit records, health checks, admin console"
+    ]
+   ],
+   "stack": [
+    "FastAPI",
+    "PostgreSQL",
+    "Redis",
+    "Docker Compose",
+    "Ollama",
+    "RBAC"
+   ],
+   "shots": []
+  },
+  {
+   "id": "ragplat",
+   "reg": "B",
+   "status": "development",
+   "domain": "ai",
+   "weight": 2.3,
+   "name": "Private RAG Platform",
+   "code": "LOCAL AI PLATFORM",
+   "tag": "Self-hosted ChatGPT alternative with citation-backed retrieval",
+   "blurb": "A production-oriented, self-hosted ChatGPT alternative for private infrastructure. Admin-managed knowledge bases with document chunking and pgvector embedding, similarity search with source citations, per-user file uploads, project workspaces and an audit dashboard.",
+   "spec": [
+    [
+     "Retrieval",
+     "Chunking → embedding → pgvector similarity search → cited answer"
+    ],
+    [
+     "Ingest",
+     "PDF, DOCX, TXT, CSV, XLSX, PPTX processed on a Celery worker"
+    ]
+   ],
+   "stack": [
+    "FastAPI",
+    "pgvector",
+    "Celery",
+    "SSE streaming",
+    "Next.js 14",
+    "Alembic",
+    "Docker"
+   ],
+   "shots": []
+  },
+  {
+   "id": "ideaflow",
+   "reg": "B",
+   "status": "development",
+   "domain": "ai",
+   "weight": 2.1,
+   "name": "IdeaFlow",
+   "code": "IDEAFLOW",
+   "tag": "Living project memory that turns scattered thoughts into designs",
+   "blurb": "A living project-memory platform. Capture unstructured thoughts, let an LLM extract intent and entities, connect them to existing project knowledge, and detect conflicts before a decision is silently overwritten — then generate architecture, flowcharts, roadmaps and execution-ready prompts traceable back to source.",
+   "spec": [
+    [
+     "Loop",
+     "Capture → understand → connect → detect conflict → evolve project memory"
+    ],
+    [
+     "Output",
+     "Architecture diagrams, flowcharts, schemas, roadmaps, agent prompts"
+    ]
+   ],
+   "stack": [
+    "Next.js App Router",
+    "FastAPI",
+    "Supabase",
+    "pgvector",
+    "RLS policies",
+    "shadcn/ui"
+   ],
+   "shots": []
+  },
+  {
+   "id": "aura",
+   "reg": "B",
+   "status": "delivered",
+   "domain": "ai",
+   "weight": 2,
+   "name": "AURA — Desktop AI Operating System",
+   "code": "AURA",
+   "tag": "Multi-agent desktop assistant on local models",
+   "blurb": "A Jarvis-inspired multi-agent desktop assistant. A supervisor agent routes every request; knowledge and execution agents parse strict JSON intent through local Ollama models and launch real tools for files, browser and applications, with durable memory across sessions.",
+   "spec": [
+    [
+     "Agents",
+     "Supervisor · Execution · Knowledge, coordinated through a router"
+    ],
+    [
+     "Reasoning",
+     "Local Ollama (qwen2.5:7b / 3b) returning strict JSON intent"
+    ]
+   ],
+   "stack": [
+    "Python",
+    "PyQt6",
+    "Ollama",
+    "Multi-agent",
+    "Qwen 2.5"
+   ],
+   "shots": []
+  },
+  {
+   "id": "jarvis",
+   "reg": "B",
+   "status": "delivered",
+   "domain": "ai",
+   "weight": 1.7,
+   "name": "Jarvis Voice Control",
+   "code": "JARVIS VOICE",
+   "tag": "Voice PC control with a deliberately closed command set",
+   "blurb": "A Windows voice assistant with a deliberately closed command set — it will not run arbitrary shell commands. Speech recognition runs in a local browser page; a Node server drives the PC; a local Qwen model decides whether to run a safe command, open a search, ask for clarification, or simply answer.",
+   "spec": [
+    [
+     "Safety",
+     "Predefined commands only — no arbitrary shell execution"
+    ],
+    [
+     "Routing",
+     "Local Qwen 2.5 chooses command, search, clarification or conversation"
+    ]
+   ],
+   "stack": [
+    "Node.js",
+    "Web Speech API",
+    "Ollama",
+    "PowerShell"
+   ],
+   "shots": []
+  },
+  {
+   "id": "flowfactory",
+   "reg": "B",
+   "status": "delivered",
+   "domain": "ai",
+   "weight": 1.7,
+   "name": "Codex n8n Flow Factory",
+   "code": "FLOW FACTORY",
+   "tag": "Agent-authored n8n workflows, validated and imported as drafts",
+   "blurb": "A workshop that lets a coding agent author n8n workflows as versioned JSON, validate them against known-good templates, map credentials, and import them into a self-hosted n8n workspace as inactive drafts — so the last human step is pressing Execute.",
+   "spec": [
+    [
+     "Pipeline",
+     "Template → generate → validate → credential map → import as draft"
+    ],
+    [
+     "Launcher",
+     "PowerShell GUI, batch entry points, npm scripts"
+    ]
+   ],
+   "stack": [
+    "Node.js",
+    "n8n public API",
+    "JSON schema validation",
+    "PowerShell GUI"
+   ],
+   "shots": []
+  },
+  {
+   "id": "toolverse",
+   "reg": "B",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 2,
+   "name": "ToolVerse",
+   "code": "TOOLVERSE",
+   "tag": "60+ utilities that never upload your files",
+   "blurb": "60+ free utility tools for documents, business, images, data, colour and text — every one running entirely in the browser. No uploads, no signup, no tracking: files never leave the device. Installable as a PWA.",
+   "spec": [
+    [
+     "Privacy",
+     "100% client-side — PDF, DOCX and image work all happens in the tab"
+    ],
+    [
+     "Categories",
+     "Document · business · image · data · colour · generators · text · productivity"
+    ]
+   ],
+   "stack": [
+    "Client-side only",
+    "PWA",
+    "PDF & DOCX processing",
+    "JavaScript",
+    "MIT"
+   ],
+   "shots": []
+  },
+  {
+   "id": "wakeforce",
+   "reg": "B",
+   "status": "delivered",
+   "domain": "mobile",
+   "weight": 1.9,
+   "name": "WakeForce — Android",
+   "code": "WAKEFORCE",
+   "tag": "Alarms you dismiss by completing a mission",
+   "blurb": "A mission-based alarm app for Android. Alarms are dismissed by completing missions rather than tapping snooze, with progress rings, streak statistics and an emergency override path. Built natively in Kotlin with Jetpack Compose and instrumented UI tests.",
+   "spec": [
+    [
+     "Architecture",
+     "MVVM — alarm, mission and stats view models over a shared repository"
+    ],
+    [
+     "Tested",
+     "Compose UI tests running on device"
+    ]
+   ],
+   "stack": [
+    "Kotlin",
+    "Jetpack Compose",
+    "MVVM",
+    "Gradle KTS",
+    "Compose UI tests"
+   ],
+   "shots": []
+  },
+  {
+   "id": "futurespace",
+   "reg": "C",
+   "status": "production",
+   "domain": "web",
+   "weight": 2.5,
+   "name": "FutureSpace",
+   "code": "FUTURESPACE",
+   "tag": "Software house site, WordPress theme and responsive rebuild",
+   "blurb": "The digital home of the software house where I ran delivery — a React/Vite site with a particle-driven hero, a courses and club programme, an activity feed and a global-reach section, shipped alongside a matching WordPress theme. Rebuilt and QA'd down to 360&nbsp;px across every page.",
+   "spec": [
+    [
+     "Scope",
+     "Site architecture, front-end build, WordPress theme, responsive QA"
+    ],
+    [
+     "Sections",
+     "Home, Services, Courses, Club, Activity, About, Team, Contact"
+    ]
+   ],
+   "stack": [
+    "React",
+    "Vite",
+    "TypeScript",
+    "WordPress theme",
+    "Vercel"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/futurespace.jpg",
+     "cap": "Homepage · particle hero"
+    },
+    {
+     "src": "assets/img/fs-home.jpg",
+     "cap": "Programme sections"
+    },
+    {
+     "src": "assets/img/fs-global.jpg",
+     "cap": "Global reach"
+    },
+    {
+     "src": "assets/img/fs-contact.jpg",
+     "cap": "Contact · Mirpur studio"
+    },
+    {
+     "src": "assets/img/fs-mobile-team.jpg",
+     "cap": "Responsive QA · 360 px"
+    }
+   ]
+  },
+  {
+   "id": "apex",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 2.2,
+   "name": "Apex Unify",
+   "code": "APEX UNIFY",
+   "tag": "Identity, animated mark, site and WordPress theme",
+   "blurb": "A full brand and web system for an all-in-one tech and creative agency: identity, animated logo, marketing site and a customised WordPress theme covering ten service lines from brand design through AI assistants and cyber security.",
+   "spec": [
+    [
+     "Delivered",
+     "Identity, animated mark, site design and build, WordPress theme package"
+    ],
+    [
+     "Service lines",
+     "Ten, from brand and web through AI assistants, security and data"
+    ]
+   ],
+   "stack": [
+    "HTML / CSS / JS",
+    "WordPress",
+    "Brand identity",
+    "Motion"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/apex-preview.jpg",
+     "cap": "Homepage · unified delivery"
+    },
+    {
+     "src": "assets/img/apex-theme.jpg",
+     "cap": "WordPress theme build"
+    },
+    {
+     "src": "assets/img/apex-site.jpg",
+     "cap": "Agency site build"
+    }
+   ]
+  },
+  {
+   "id": "rentacar",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "retail",
+   "weight": 2,
+   "name": "Jinnah Motors — Rent-A-Car Management",
+   "code": "JINNAH MOTORS",
+   "tag": "Fleet console with token tax and document expiry alerts",
+   "blurb": "A fleet operations console for a Rawalpindi rent-a-car business: bookings, vehicle calendar, drivers, expenses, profit reports, and — the part that matters locally — token tax and document expiry alerts before a vehicle is stopped at a checkpoint.",
+   "spec": [
+    [
+     "Focus",
+     "Fleet availability, daily closing, PKR profit reporting, document alerts"
+    ],
+    [
+     "Surfaces",
+     "Dashboard, bookings, vehicle calendar, customers, drivers, expenses"
+    ]
+   ],
+   "stack": [
+    "HTML / CSS / JS",
+    "Dashboard UX",
+    "PKR reporting"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/rentacar.jpg",
+     "cap": "Fleet operations console"
+    }
+   ]
+  },
+  {
+   "id": "devcore",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 1.9,
+   "name": "DevCore",
+   "code": "DEVCORE",
+   "tag": "WebGL particle field with GSAP scroll choreography",
+   "blurb": "Agency site for Star Solutions built on a WebGL particle field with GSAP scroll choreography — three.js background, scroll-triggered reveals, and a restrained type system holding it all together.",
+   "spec": [
+    [
+     "Technique",
+     "three.js background, ScrollTrigger reveals, custom cursor"
+    ]
+   ],
+   "stack": [
+    "Three.js",
+    "GSAP ScrollTrigger",
+    "WebGL",
+    "JavaScript"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/devcore-2.jpg",
+     "cap": "WebGL particle field"
+    },
+    {
+     "src": "assets/img/devcore.jpg",
+     "cap": "Opening sequence"
+    }
+   ]
+  },
+  {
+   "id": "zehnox",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 1.8,
+   "name": "ZEHNOX Identity System",
+   "code": "ZEHNOX",
+   "tag": "Ten-page identity guide, motion treatment and site structure",
+   "blurb": "A complete brand identity — primary mark, logo variants, colour and typography specification, a ten-page identity guide, motion treatment and a documented website structure under the line “From Mind to World”.",
+   "spec": [
+    [
+     "Delivered",
+     "Primary mark, four logo variants, ten-page guide, motion, site documentation"
+    ]
+   ],
+   "stack": [
+    "Adobe Illustrator",
+    "Photoshop",
+    "Identity guide",
+    "Motion"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/zehnox-identity.jpg",
+     "cap": "Identity guide"
+    },
+    {
+     "src": "assets/img/zehnox-logo.jpg",
+     "cap": "Primary mark"
+    }
+   ]
+  },
+  {
+   "id": "blooddrive",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "health",
+   "weight": 1.6,
+   "name": "Blood Donation Campaign Sites",
+   "code": "BLOOD DRIVE",
+   "tag": "Donor sign-up front-ends for donation drives",
+   "blurb": "Two public-facing campaign front-ends for blood donation drives — donor sign-up, eligibility guidance and drive information, designed to be readable on a phone at a camp table.",
+   "spec": [
+    [
+     "Built for",
+     "On-site donation camps and public drive promotion"
+    ]
+   ],
+   "stack": [
+    "HTML / CSS / JS",
+    "Responsive"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/blood-demo.jpg",
+     "cap": "Campaign front-end"
+    },
+    {
+     "src": "assets/img/blood-demo-2.jpg",
+     "cap": "Second drive layout"
+    }
+   ]
+  },
+  {
+   "id": "havenworks",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 1.5,
+   "name": "Havenworks Redesign",
+   "code": "HAVENWORKS",
+   "tag": "Rebuilding an overloaded page into a reading hierarchy",
+   "blurb": "A structural redesign of a dense news and content site — rebuilding an overloaded page into a clear reading hierarchy without losing the breadth of content the original carried.",
+   "spec": [
+    [
+     "Approach",
+     "Information architecture first, then type scale and density"
+    ]
+   ],
+   "stack": [
+    "Information architecture",
+    "HTML / CSS"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/amna-news.jpg",
+     "cap": "Redesigned reading hierarchy"
+    }
+   ]
+  },
+  {
+   "id": "edshifu",
+   "reg": "C",
+   "status": "delivered",
+   "domain": "web",
+   "weight": 1.4,
+   "name": "WordPress Theme Delivery",
+   "code": "EDSHIFU",
+   "tag": "Custom themes packaged for client hand-off",
+   "blurb": "Custom and customised WordPress themes packaged for client hand-off — theme builds, backup packages and deployment-ready archives for education and IT services clients.",
+   "spec": [
+    [
+     "Delivered",
+     "Theme builds, customisation, backup packages, upload-ready archives"
+    ]
+   ],
+   "stack": [
+    "WordPress",
+    "PHP",
+    "Theme packaging"
+   ],
+   "shots": []
+  },
+  {
+   "id": "campaigns",
+   "reg": "D",
+   "status": "delivered",
+   "domain": "media",
+   "weight": 1.8,
+   "name": "Client Campaign Editing",
+   "code": "CAMPAIGNS",
+   "tag": "Multi-cut campaign delivery for international clients",
+   "blurb": "Multi-cut campaign delivery for international clients — regional edits, music and no-music variants, vertical reels and HD masters, turned around against short deadlines.",
+   "spec": [
+    [
+     "Deliverables",
+     "Regional cuts, music / no-music variants, vertical reels, HD masters"
+    ]
+   ],
+   "stack": [
+    "Adobe Premiere Pro",
+    "After Effects",
+    "CapCut",
+    "Colour & sound"
+   ],
+   "shots": []
+  },
+  {
+   "id": "productfilms",
+   "reg": "D",
+   "status": "delivered",
+   "domain": "media",
+   "weight": 1.5,
+   "name": "Product Walkthrough Films",
+   "code": "PRODUCT FILM",
+   "tag": "Demo and onboarding films for the systems above",
+   "blurb": "Screen-recorded walkthroughs for the restaurant, inventory, POS and laboratory systems — used as client demos and onboarding material for staff who will use the software daily.",
+   "spec": [
+    [
+     "Used for",
+     "Client demos and staff onboarding"
+    ]
+   ],
+   "stack": [
+    "Screen capture",
+    "Motion graphics",
+    "Voice-over edit"
+   ],
+   "shots": []
+  },
+  {
+   "id": "longform",
+   "reg": "D",
+   "status": "delivered",
+   "domain": "media",
+   "weight": 1.4,
+   "name": "Long-Form & Documentary Edits",
+   "code": "LONG FORM",
+   "tag": "Narrative business documentary work",
+   "blurb": "Narrative business documentary work and long-form storytelling pieces, cut for pacing and argument rather than montage.",
+   "spec": [
+    [
+     "Approach",
+     "Cut for argument and pacing, not montage"
+    ]
+   ],
+   "stack": [
+    "Narrative editing",
+    "Archive footage",
+    "Sound design"
+   ],
+   "shots": []
+  },
+  {
+   "id": "chatbot",
+   "reg": "E",
+   "status": "development",
+   "domain": "learning",
+   "weight": 2.2,
+   "name": "Embeddable RAG Chatbot Platform",
+   "code": "CHATBOT",
+   "tag": "A SaaS product in miniature — backend, admin and embeddable widget",
+   "blurb": "The most complete piece in the lab: a containerised support-chat product with a FastAPI backend, Alembic migrations, a React admin dashboard, and a standalone embeddable widget built as its own bundle — the full shape of a SaaS product in miniature.",
+   "spec": [
+    [
+     "Pieces",
+     "Backend API · admin dashboard · embeddable widget bundle · nginx · Postgres"
+    ],
+    [
+     "Deploy",
+     "One docker-compose bringing up every service with health checks"
+    ]
+   ],
+   "stack": [
+    "FastAPI",
+    "PostgreSQL",
+    "Alembic",
+    "Docker Compose",
+    "Vite",
+    "nginx"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lp-chatbot.jpg",
+     "cap": "Embeddable chat widget"
+    }
+   ]
+  },
+  {
+   "id": "poki",
+   "reg": "E",
+   "status": "delivered",
+   "domain": "learning",
+   "weight": 1.7,
+   "name": "Body-Pose Game Controller",
+   "code": "POKI",
+   "tag": "Webcam body tracking wired into keyboard input",
+   "blurb": "A Chrome extension that turns webcam body tracking into keyboard input, so browser games are played by moving rather than typing. Pose detection in the page, key events dispatched from the background worker.",
+   "spec": [
+    [
+     "Shape",
+     "MV3 extension — content script detects pose, background dispatches keys"
+    ]
+   ],
+   "stack": [
+    "Chrome extension MV3",
+    "Pose detection",
+    "JavaScript"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lp-bodyrunner.jpg",
+     "cap": "Body-tracked runner"
+    },
+    {
+     "src": "assets/img/lp-poki.jpg",
+     "cap": "Controller mapping"
+    }
+   ]
+  },
+  {
+   "id": "codingmaths",
+   "reg": "E",
+   "status": "delivered",
+   "domain": "learning",
+   "weight": 1.6,
+   "name": "Mathematics in Motion",
+   "code": "CODING MATHS",
+   "tag": "Canvas experiments that animate the maths behind graphics",
+   "blurb": "Canvas experiments that render mathematical behaviour as animation rather than notation — built to develop intuition for the geometry underneath graphics and simulation code.",
+   "spec": [
+    [
+     "Why",
+     "Intuition for the geometry underneath rendering and simulation"
+    ]
+   ],
+   "stack": [
+    "Canvas API",
+    "JavaScript",
+    "Numerical methods"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lp-codingmaths.jpg",
+     "cap": "Mathematics visualisation"
+    }
+   ]
+  },
+  {
+   "id": "aiml",
+   "reg": "E",
+   "status": "development",
+   "domain": "learning",
+   "weight": 1.8,
+   "name": "Embeddings, Vector Search & TensorFlow",
+   "code": "AI LAB",
+   "tag": "The machinery behind the AI platforms, built by hand",
+   "blurb": "Ground-level work on the machinery behind the AI platforms above: building embeddings by hand, implementing vector similarity search, LangChain pipelines, local Llama inference, and a TensorFlow environment for model training.",
+   "spec": [
+    [
+     "Built by hand",
+     "Embeddings, cosine similarity search, retrieval pipelines"
+    ]
+   ],
+   "stack": [
+    "TensorFlow",
+    "LangChain",
+    "Embeddings",
+    "Vector search",
+    "Ollama",
+    "Python"
+   ],
+   "shots": []
+  },
+  {
+   "id": "mernfast",
+   "reg": "E",
+   "status": "delivered",
+   "domain": "learning",
+   "weight": 1.5,
+   "name": "MERN & FastAPI Fundamentals",
+   "code": "MERN / FAST",
+   "tag": "Both production stacks rebuilt from an empty folder",
+   "blurb": "Deliberate practice across the two stacks that carry most of the production work — React with Vite on the front, FastAPI services on the back, built from an empty folder each time rather than from a generator.",
+   "spec": [
+    [
+     "Rule",
+     "From an empty folder, never from a generator"
+    ]
+   ],
+   "stack": [
+    "React",
+    "Vite",
+    "FastAPI",
+    "Node.js",
+    "JavaScript"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lp-webdev.jpg",
+     "cap": "Front-end practice build"
+    }
+   ]
+  },
+  {
+   "id": "syscrypto",
+   "reg": "E",
+   "status": "delivered",
+   "domain": "learning",
+   "weight": 1.5,
+   "name": "Systems & Cryptography Basics",
+   "code": "C / CPP / CYPHER",
+   "tag": "The low-level counterweight to a high-level stack",
+   "blurb": "C and C++ from first principles, plus a cipher workshop implementing classical encryption schemes with a browser front-end — the low-level counterweight to a mostly high-level stack.",
+   "spec": [
+    [
+     "Covered",
+     "Pointers and memory in C/C++, classical ciphers with a web front-end"
+    ]
+   ],
+   "stack": [
+    "C",
+    "C++",
+    "Python",
+    "Classical ciphers"
+   ],
+   "shots": [
+    {
+     "src": "assets/img/lp-cypher.jpg",
+     "cap": "Cipher workshop"
+    },
+    {
+     "src": "assets/img/lp-arti.jpg",
+     "cap": "Console experiments"
+    }
+   ]
+  }
+ ],
+ "STATUS": {
+  "production": {
+   "label": "In production",
+   "tone": "live"
+  },
+  "pilot": {
+   "label": "Pilot / SaaS",
+   "tone": "amber"
+  },
+  "development": {
+   "label": "In development",
+   "tone": "violet"
+  },
+  "delivered": {
+   "label": "Delivered",
+   "tone": "grey"
+  }
+ },
+ "DOMAINS": {
+  "health": "Healthcare & labs",
+  "retail": "Retail & hospitality",
+  "ai": "AI & platforms",
+  "web": "Web & brand",
+  "mobile": "Mobile",
+  "media": "Media",
+  "learning": "Learning lab"
+ },
+ "REGISTERS": {
+  "A": {
+   "title": "Systems in production",
+   "intro": "Software other people depend on to do their job. Each entry names where it runs and which modules actually shipped. Screenshots are captured from the running application."
+  },
+  "B": {
+   "title": "Platforms & applied AI",
+   "intro": "Self-hosted, provider-neutral AI infrastructure and agent systems — built so an institution keeps its own data on its own hardware."
+  },
+  "C": {
+   "title": "Web, product & brand",
+   "intro": "Marketing sites, WordPress themes, product interfaces and full identity systems — from logo grid to shipped responsive build."
+  },
+  "D": {
+   "title": "Media & video production",
+   "intro": "Commercial editing sold through Fiverr and Upwork, client campaign work, and the product films that accompany the systems above."
+  },
+  "E": {
+   "title": "Foundations & the learning lab",
+   "intro": "A working directory of deliberate practice — where a stack gets learned properly before it goes near a client."
+  }
+ }
+}
