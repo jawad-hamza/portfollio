@@ -24,6 +24,8 @@
      "The centre's departmental manuals — mobilisation, collection, medical officer, processing, serology, distribution, and the blood bank KPI set"
     ]
    ],
+   "shotSrc": "from the counter-flow prototype",
+   "shotNote": "The clickable prototype built for departmental sign-off. Every clinical rule on screen carries its SOP code and manual page reference, so the staff who work to those manuals could verify the logic before a line of the real system was written.",
    "stack": [
     "ASP.NET Core 8 MVC",
     "C#",
@@ -81,7 +83,48 @@
      ]
     ]
    },
-   "shots": []
+   "shots": [
+    {
+     "src": "assets/img/bb-home.jpg",
+     "cap": "Counter picker · one PC, one station"
+    },
+    {
+     "src": "assets/img/bb-reception.jpg",
+     "cap": "Step 01 · CNIC recall and donor registration"
+    },
+    {
+     "src": "assets/img/bb-screening.jpg",
+     "cap": "Step 02 · UDHQ — one question, SOP code, deferral action"
+    },
+    {
+     "src": "assets/img/bb-exam.jpg",
+     "cap": "Step 02 · Physical examination and vitals ranges"
+    },
+    {
+     "src": "assets/img/bb-donation.jpg",
+     "cap": "Step 03 · Phlebotomy, DIN and bag weight"
+    },
+    {
+     "src": "assets/img/bb-lab.jpg",
+     "cap": "Step 04 · Units held in quarantine"
+    },
+    {
+     "src": "assets/img/bb-lab-unit.jpg",
+     "cap": "Step 04 · Grouping, TTI screening and release"
+    },
+    {
+     "src": "assets/img/bb-issue.jpg",
+     "cap": "Step 05 · Stock on hand by group and component"
+    },
+    {
+     "src": "assets/img/bb-requests.jpg",
+     "cap": "Step 05 · Ward requests awaiting crossmatch"
+    },
+    {
+     "src": "assets/img/bb-compat.jpg",
+     "cap": "Step 05 · Compatibility ladder by component"
+    }
+   ]
   },
   {
    "id": "lims",
@@ -114,23 +157,8 @@
     "Class-based views",
     "Custom auth model"
    ],
+   "shotNote": "Only the sign-in screen is published. Everything past it is live patient and family data belonging to the lab.",
    "shots": [
-    {
-     "src": "assets/img/lims-dashboard.jpg",
-     "cap": "Laboratory overview · sample workflow"
-    },
-    {
-     "src": "assets/img/lims-families.jpg",
-     "cap": "Family register · pedigrees"
-    },
-    {
-     "src": "assets/img/lims-samples.jpg",
-     "cap": "Sample tracking · status pipeline"
-    },
-    {
-     "src": "assets/img/lims-disorders.jpg",
-     "cap": "Disorder dictionary"
-    },
     {
      "src": "assets/img/lims.jpg",
      "cap": "Protected workspace · sign-in"

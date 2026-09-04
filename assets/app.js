@@ -2,8 +2,8 @@
    app.js — JAWAD HAMZA / Deployment Register
 
    Preloader · Lenis-style inertia scroll · custom lerp cursor · GSAP
-   ScrollTrigger pinned horizontal showcase · hover-peek index · canvas
-   deployment map · command palette · drawer · lightbox.
+   ScrollTrigger pinned horizontal showcase and field log · sticky time
+   stack · parallax · hover-peek index · command palette · drawer · lightbox.
    Everything is derived from PROJECTS in data.js.
    ========================================================================= */
 (() => {
@@ -19,7 +19,6 @@ const HAS_GSAP = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefi
 if (HAS_GSAP) gsap.registerPlugin(ScrollTrigger);
 
 const byId = Object.fromEntries(PROJECTS.map(p => [p.id, p]));
-const FEATURED = ["bloodbank", "lims", "vendora", "rms", "nexus", "futurespace"];
 /* the systems that get a full row in the index; everything else is mentioned
    as a chip below them */
 const HEADLINE = ["bloodbank", "lims", "hmis", "vendora", "rms", "listen", "nexus", "futurespace"];
@@ -86,7 +85,7 @@ function setTheme(t) {
   rootEl.setAttribute("data-theme", t);
   try { localStorage.setItem("jh-theme", t); } catch (e) {}
   syncToggle();
-  requestAnimationFrame(() => { readTokens(); drawMap(); });
+  requestAnimationFrame(readTokens);
 }
 try {
   const s = localStorage.getItem("jh-theme");
@@ -181,67 +180,14 @@ function animateIn() {
   });
 }
 
-/* ================================================== PINNED HORIZONTAL SHOW */
-function panelHTML(p, i) {
-  const shot = p.shots[0];
-  const mods = p.modules
-    ? `<span class="panel__mods">${p.modules.items.slice(0, 8).map(m => esc(m[0])).join("  ·  ")}</span>` : "";
-  const art = shot
-    ? `<img src="${shot.src}" alt="${esc(p.name)}" loading="lazy" decoding="async">
-       <span class="panel__scrim"></span>`
-    : `<span class="panel__glyph"><b>${p.modules ? p.modules.items.length : p.stack.length}</b>
-         <span>${p.modules ? "modules shipped" : "technologies"}</span>${mods}</span>
-       <span class="panel__scrim"></span>`;
-  return `<button class="panel" data-open="${p.id}" data-cursor="Open"
-                  aria-label="Open ${esc(p.name)}">
-      <span class="panel__media">${art}</span>
-      <span class="panel__no">${String(i + 1).padStart(2, "0")}</span>
-      <span class="panel__content">
-        <span class="panel__meta">${stampHTML(p)}<span class="code">${esc(p.code)}</span></span>
-        <h3>${p.name}</h3>
-        <p>${esc(p.tag)}</p>
-        <span class="panel__stack">${esc(p.stack.slice(0, 4).join(" · "))}</span>
-        <span class="panel__cta">Open case<i></i></span>
-      </span>
-    </button>`;
-}
 const stampHTML = p => {
   const s = STATUS[p.status];
   return `<span class="stamp stamp--${s.tone}">${s.label}</span>`;
 };
 
-function buildShowcase() {
-  const track = $("#showTrack");
-  track.innerHTML = FEATURED.map((id, i) => panelHTML(byId[id], i)).join("");
-  if (!HAS_GSAP || COARSE) {
-    /* graceful fallback: a plain horizontal scroller */
-    track.parentElement.style.overflowX = "auto";
-    return;
-  }
-  const dist = () => Math.max(0, track.scrollWidth - innerWidth + 32);
-  gsap.to(track, {
-    x: () => -dist(), ease: "none",
-    scrollTrigger: {
-      trigger: "#showcase", start: "top top", end: () => "+=" + dist(),
-      pin: true, scrub: 0.6, invalidateOnRefresh: true,
-      onUpdate: self => {
-        const f = $("#showRail i");
-        if (f) f.style.width = (self.progress * 100).toFixed(2) + "%";
-        /* each image drifts inside its own frame as the panel crosses the
-           viewport — the depth cue that makes a flat card feel photographic */
-        $$(".panel").forEach(el => {
-          const img = el.querySelector(".panel__media img");
-          if (!img) return;
-          const r = el.getBoundingClientRect();
-          const k = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
-          img.style.transform = `translateX(${(-k * 5.5).toFixed(2)}%)`;
-        });
-      },
-    },
-  });
-}
-
 /* ============================================================== INDEX LIST */
+const ALL_INTRO = "Five registers, filtered in place. Pick one to read what it covers.";
+
 function buildIndex() {
   const host = $("#idx");
   const head = new Set(HEADLINE);
@@ -261,16 +207,20 @@ function buildIndex() {
     regs.map(k => `<button aria-pressed="false" data-reg="${k}">${esc(REGISTERS[k].title)}<b>${
       rest.filter(p => p.reg === k).length}</b></button>`).join("");
 
-  const chips = rest.map(p => `
-      <button class="chip" data-open="${p.id}" data-reg="${p.reg}" data-cursor="Open"
-              aria-label="${esc(p.name)} — ${esc(p.tag)}">
-        <span class="chip__dot tone--${STATUS[p.status].tone}" aria-hidden="true"></span>
-        <span class="chip__name">${p.name}</span>
-        <span class="chip__more" aria-hidden="true">
-          <span class="chip__tag">${esc(p.tag)}</span>
-          <span class="chip__stack">${esc(p.stack.slice(0, 3).join(" · "))}</span>
+  /* Ruled index entries rather than 24 identical pills. Each one carries the
+     hover preview the headline rows use, so the picture still arrives without
+     the layout having to hold room for it. */
+  const chips = rest.map((p, i) => `
+      <button class="ridx__i" data-open="${p.id}" data-peek="${p.id}" data-reg="${p.reg}"
+              data-cursor="Open" aria-label="${esc(p.name)} — ${esc(p.tag)}">
+        <span class="ridx__n2">${String(i + 1).padStart(2, "0")}</span>
+        <span class="ridx__name">${p.name}</span>
+        <i class="ridx__lead" aria-hidden="true"></i>
+        <span class="ridx__tail">
+          <span class="ridx__reg">${esc(p.reg)}</span>
+          <span class="ridx__dot tone--${STATUS[p.status].tone}"
+                title="${esc(STATUS[p.status].label)}"></span>
         </span>
-        <span class="chip__arrow" aria-hidden="true">&#8594;</span>
       </button>`).join("");
 
   host.innerHTML = rows + `
@@ -282,22 +232,33 @@ function buildIndex() {
         </div>
         <div class="filt" id="alsoFilt" role="group" aria-label="Filter by register">${filters}</div>
       </div>
-      <div class="chips-grid" id="alsoGrid">${chips}</div>
+      <p class="also__intro" id="alsoIntro" aria-live="polite">${esc(ALL_INTRO)}</p>
+      <div class="ridx" id="alsoGrid">${chips}</div>
+      <div class="ridx__legend" aria-hidden="true">
+        <span><i style="background:var(--live)"></i>In production</span>
+        <span><i style="background:var(--pilot)"></i>Pilot</span>
+        <span><i style="background:var(--violet)"></i>In development</span>
+        <span><i style="background:var(--grey-tone)"></i>Delivered</span>
+      </div>
     </div>`;
 
   const num = $("#idxCount");
   if (num) num.textContent = `Full index · ${lead.length} headline · ${PROJECTS.length} systems`;
 
   /* register filter: dims everything that doesn't match, keeps the layout */
-  const filt = $("#alsoFilt"), grid = $("#alsoGrid");
+  const filt = $("#alsoFilt"), grid = $("#alsoGrid"), intro = $("#alsoIntro");
   filt.addEventListener("click", ev => {
     const b = ev.target.closest("button[data-reg]"); if (!b) return;
     const k = b.dataset.reg;
     $$("button", filt).forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    $$(".chip", grid).forEach(c => {
+    $$(".ridx__i", grid).forEach(c => {
       if (!k || c.dataset.reg === k) c.removeAttribute("data-off");
       else c.setAttribute("data-off", "");
     });
+    /* each register carries a written description of what belongs in it —
+       show it, rather than leaving the reader to infer it from the chips */
+    intro.textContent = k ? REGISTERS[k].intro : ALL_INTRO;
+    intro.classList.remove("is-swap"); void intro.offsetWidth; intro.classList.add("is-swap");
   });
 }
 
@@ -454,17 +415,55 @@ function heroTicker() {
   if (!REDUCED) setInterval(paint, 3200);
 }
 
+/* =========================================================== FOCUS / INERT
+   The drawer, palette and lightbox all declare aria-modal="true". Without
+   this that claim is false: Tab walks straight out of the dialog into the
+   page behind it, which a screen reader is still reading out. `inert` on the
+   sibling regions does both jobs at once — it removes them from the tab order
+   and from the accessibility tree — and the stack keeps nesting honest when
+   the lightbox opens on top of an already-open drawer.
+   ========================================================================= */
+const overlayStack = [];
+
+function trapFocus(root, initial) {
+  if (!root || overlayStack.some(o => o.root === root)) return;
+  const restore = document.activeElement;
+  root.removeAttribute("inert");
+  /* #scrim is the shared backdrop and must stay clickable to close on tap */
+  const inerted = [...document.body.children]
+    .filter(el => el !== root && el.id !== "scrim" && !el.hasAttribute("inert"));
+  inerted.forEach(el => el.setAttribute("inert", ""));
+  overlayStack.push({ root, restore, inerted });
+  if (initial) setTimeout(() => initial.focus(), 60);
+}
+
+function releaseFocus(root) {
+  if (!root) return;
+  const i = overlayStack.findIndex(o => o.root === root);
+  root.setAttribute("inert", "");
+  if (i < 0) return;
+  const [o] = overlayStack.splice(i, 1);
+  o.inerted.forEach(el => el.removeAttribute("inert"));
+  if (o.restore && o.restore.isConnected && o.restore.focus) o.restore.focus({ preventScroll: true });
+}
+
 /* ================================================================ DRAWER */
 const drawer = { open: false };
+
+/* Where a project's screenshots actually came from. Most are captured from the
+   running application; a couple are not, and saying so is the whole point of
+   claiming it anywhere at all. */
+const shotSource = p => p.shotSrc || "from the running application";
 
 function drawerHTML(p) {
   const shots = p.shots.length ? `
     <div>
-      <div class="dlabel">Screens · ${p.shots.length} from the running app
+      <div class="dlabel">Screens · ${p.shots.length} ${esc(shotSource(p))}
         <span class="shots__nav" aria-hidden="true">
           <button type="button" data-sh="-1" aria-label="Previous screen">&#8592;</button>
           <button type="button" data-sh="1" aria-label="Next screen">&#8594;</button>
         </span></div>
+      ${p.shotNote ? `<p class="shotnote">${esc(p.shotNote)}</p>` : ""}
       <div class="shots" id="dshots" tabindex="0" aria-label="Screenshots — scroll sideways, drag, or use the arrows">${p.shots.map((s, i) => `
         <figure data-pid="${p.id}" data-i="${i}" data-cursor="View">
           <img src="${s.src}" alt="${esc(s.cap)}" loading="lazy" decoding="async">
@@ -495,151 +494,318 @@ function openDrawer(id) {
   $("#drawer").classList.add("is-on");
   document.body.classList.add("is-locked");
   cursor.setLabel("");
-  setTimeout(() => $("#dclose").focus(), 80);
+  trapFocus($("#drawer"), $("#dclose"));
 }
 function closeDrawer() {
   drawer.open = false;
   $("#drawer").classList.remove("is-on");
+  releaseFocus($("#drawer"));
   if (!lb.open) document.body.classList.remove("is-locked");
 }
 
-/* ================================================================== MAP */
-const cv = $("#mapcv"), ctx = cv ? cv.getContext("2d") : null;
-let nodes = [], hubs = {}, hover = null, tokens = {}, mapW = 0, mapH = 0;
-
+/* ================================================================= TOKENS
+   The hero canvas paints with the same custom properties the stylesheet
+   uses, so a theme switch repaints instead of drifting out of sync. These
+   names must match app.css exactly — a typo is silent, because canvas just
+   ignores an empty fillStyle and keeps whatever colour was set last. */
+let tokens = {};
 function readTokens() {
   const cs = getComputedStyle(document.body);
   const g = n => cs.getPropertyValue(n).trim();
-  tokens = { live: g("--live"), amber: g("--amber"), violet: g("--violet"), grey: g("--grey-tone"),
-             lineSoft: g("--line-soft"), faint: g("--faint"), ground: g("--ground"), mapBg: g("--raise-2") };
+  tokens = { live: g("--live"), amber: g("--pilot"), violet: g("--violet"), grey: g("--grey-tone"),
+             lineSoft: g("--line-soft"), faint: g("--faint"), ground: g("--ground"),
+             mapBg: g("--raise-2"), accent: g("--accent"), accent2: g("--accent-2") };
 }
-const toneColor = t => ({ live: tokens.live, amber: tokens.amber, violet: tokens.violet, grey: tokens.grey }[t]);
-const rnd = s => { const x = Math.sin(s * 9301 + 49297) * 233280; return x - Math.floor(x); };
 
-function layout() {
-  const keys = Object.keys(DOMAINS);
-  const cx = mapW / 2, cy = mapH / 2, rx = mapW * .33, ry = mapH * .30;
-  hubs = {};
-  keys.forEach((k, i) => {
-    const a = (i / keys.length) * Math.PI * 2 - Math.PI / 2;
-    hubs[k] = { x: cx + Math.cos(a) * rx, y: cy + Math.sin(a) * ry, key: k };
-  });
-  const scale = Math.min(mapW, mapH) / 420;
-  nodes = PROJECTS.map((p, i) => {
-    const hub = hubs[p.domain], peers = PROJECTS.filter(q => q.domain === p.domain);
-    const a = (peers.indexOf(p) / Math.max(peers.length, 1)) * Math.PI * 2 + rnd(i + 1) * 1.2;
-    const d = (24 + rnd(i + 7) * 32) * scale;
-    return { p, hub, x: hub.x + Math.cos(a) * d, y: hub.y + Math.sin(a) * d,
-             r: (4.4 + p.weight * 2.4) * Math.max(scale, .72),
-             ph: rnd(i + 3) * Math.PI * 2, sp: .35 + rnd(i + 11) * .5 };
-  });
-  for (let pass = 0; pass < 60; pass++) {
-    for (let i = 0; i < nodes.length; i++)
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        const dist = Math.hypot(dx, dy) || .01, min = a.r + b.r + 9;
-        if (dist < min) { const k = (min - dist) / dist * .5; dx *= k; dy *= k;
-          a.x -= dx; a.y -= dy; b.x += dx; b.y += dy; }
-      }
-    nodes.forEach(n => {
-      n.x += (n.hub.x - n.x) * .012; n.y += (n.hub.y - n.y) * .012;
-      n.x = clamp(n.x, n.r + 6, mapW - n.r - 6); n.y = clamp(n.y, n.r + 6, mapH - n.r - 6);
-    });
-  }
-  nodes.forEach(n => { n.dx = n.x; n.dy = n.y; });
-  if (hover) hover = nodes.find(n => n.p.id === hover.p.id) || null;
-}
-function sizeMap() {
-  if (!cv) return;
-  const w = cv.parentElement.getBoundingClientRect().width;
-  mapW = Math.max(300, w);
-  mapH = Math.max(300, Math.min(520, Math.round(mapW * .46)));
-  const dpr = Math.min(devicePixelRatio || 1, 2);
-  cv.width = Math.round(mapW * dpr); cv.height = Math.round(mapH * dpr);
-  cv.style.width = mapW + "px"; cv.style.height = mapH + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  layout();
-}
-const sharesStack = (a, b) => {
-  const A = new Set(a.p.stack.map(s => s.toLowerCase()));
-  return b.p.stack.some(s => A.has(s.toLowerCase()));
-};
-function drawMap() {
-  if (!ctx) return;
-  ctx.clearRect(0, 0, mapW, mapH);
-  ctx.lineWidth = 1; ctx.strokeStyle = tokens.lineSoft;
-  nodes.forEach(n => { ctx.beginPath(); ctx.moveTo(n.hub.x, n.hub.y); ctx.lineTo(n.dx, n.dy); ctx.stroke(); });
+/* ============================================================== FIELD LOG
+   Four full-viewport panels driven sideways by vertical scroll while the
+   viewport is pinned. Every reveal inside a panel is triggered through
+   `containerAnimation`, which is how ScrollTrigger tracks an element that is
+   moving horizontally under a pin rather than down the page.
+   ========================================================================= */
+function buildField() {
+  const track = $("#fieldTrack"); if (!track) return;
+  const total = String(FIELD.length).padStart(2, "0");
 
-  if (hover) {
-    ctx.strokeStyle = tokens.accent; ctx.globalAlpha = .36; ctx.lineWidth = 1.2;
-    nodes.forEach(n => {
-      if (n === hover || !sharesStack(hover, n)) return;
-      ctx.beginPath(); ctx.moveTo(hover.dx, hover.dy); ctx.lineTo(n.dx, n.dy); ctx.stroke();
-    });
-    ctx.globalAlpha = 1;
-  }
-  Object.values(hubs).forEach(h => {
-    ctx.fillStyle = tokens.faint; ctx.globalAlpha = .5;
-    ctx.beginPath(); ctx.arc(h.x, h.y, 1.8, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
-  });
-  nodes.forEach(n => {
-    const col = toneColor(STATUS[n.p.status].tone);
-    if (hover === n) {
-      ctx.fillStyle = col; ctx.globalAlpha = .2;
-      ctx.beginPath(); ctx.arc(n.dx, n.dy, n.r + 8, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+  track.innerHTML = FIELD.map(f => {
+    const media = f.shot
+      ? `<div class="fpanel__media">
+           <img src="${f.shot}" alt="${esc(f.place)}" loading="lazy" decoding="async">
+         </div>`
+      : `<div class="fplate">
+           <b>${esc(f.plate.big)}</b><span>${esc(f.plate.label)}</span>
+           <small>${esc(f.plate.note)}</small>
+         </div>`;
+    return `<article class="fpanel">
+      <div class="fpanel__body">
+        <span class="fpanel__no">${esc(f.no)} <i>/ ${total}</i></span>
+        <h3 class="fpanel__place">${f.place}</h3>
+        <span class="fpanel__city">${f.city}</span>
+        <span class="fpanel__role">${f.role}</span>
+        <p class="fpanel__line">${f.line}</p>
+        <div class="facts">${f.facts.map(([k, v]) => `
+          <div class="fact"><span class="fact__k">${k}</span><i class="fact__r"></i>
+            <span class="fact__v">${v}</span></div>`).join("")}
+        </div>
+        <button class="fpanel__open" data-open="${f.id}" data-cursor="Open">
+          Open the case<i></i>
+        </button>
+      </div>
+      ${media}
+    </article>`;
+  }).join("");
+
+  const count = $("#fieldCount"), rail = $("#fieldRail");
+  const panels = $$(".fpanel", track);
+
+  /* Below 900px, and on any touch device, the stylesheet has already turned
+     this into an ordinary vertical read — pinning a sideways track under a
+     thumb is worse than no effect at all. Reveal on plain scroll instead. */
+  const horizontal = HAS_GSAP && !COARSE && !REDUCED && innerWidth > 900;
+  if (!horizontal) {
+    if (HAS_GSAP && !REDUCED) {
+      panels.forEach(p => {
+        gsap.to(p.querySelectorAll(".fact__r"), {
+          scaleX: 1, duration: .6, ease: "expo.out", stagger: .07,
+          scrollTrigger: { trigger: p, start: "top 72%" },
+        });
+      });
+    } else {
+      $$(".fact__r", track).forEach(r => (r.style.transform = "none"));
     }
-    ctx.fillStyle = col;
-    ctx.beginPath(); ctx.arc(n.dx, n.dy, n.r, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = tokens.ground; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(n.dx, n.dy, n.r, 0, Math.PI * 2); ctx.stroke();
+    return;
+  }
+
+  const dist = () => Math.max(0, track.scrollWidth - innerWidth);
+  const run = gsap.to(track, {
+    x: () => -dist(), ease: "none",
+    scrollTrigger: {
+      trigger: "#field .field__viewport", start: "top top",
+      end: () => "+=" + dist(), pin: true, scrub: .55, invalidateOnRefresh: true,
+      onUpdate: self => {
+        if (rail) rail.style.width = (self.progress * 100).toFixed(2) + "%";
+        const i = clamp(Math.floor(self.progress * FIELD.length) + 1, 1, FIELD.length);
+        if (count) count.innerHTML = String(i).padStart(2, "0") + ` <i>/ ${total}</i>`;
+        /* each image drifts against the direction of travel, so the media
+           reads as sitting behind the frame rather than glued to it */
+        panels.forEach(p => {
+          const img = p.querySelector(".fpanel__media img"); if (!img) return;
+          const r = p.getBoundingClientRect();
+          const k = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
+          img.style.transform = `translateX(${(k * 4.5).toFixed(2)}%)`;
+        });
+      },
+    },
   });
-  ctx.font = "500 8px ui-monospace, JetBrains Mono, monospace";
-  ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-  Object.values(hubs).forEach(h => {
-    const own = nodes.filter(n => n.p.domain === h.key); if (!own.length) return;
-    const label = DOMAINS[h.key].toUpperCase(), w = ctx.measureText(label).width;
-    const x = clamp((Math.min(...own.map(n => n.dx)) + Math.max(...own.map(n => n.dx))) / 2,
-                    w / 2 + 5, mapW - w / 2 - 5);
-    const y = Math.max(9, Math.min(...own.map(n => n.dy - n.r)) - 9);
-    ctx.lineWidth = 3.5; ctx.strokeStyle = tokens.mapBg; ctx.strokeText(label, x, y);
-    ctx.fillStyle = tokens.faint; ctx.fillText(label, x, y);
+
+  /* per-panel reveals, tracked through the horizontal tween */
+  panels.forEach(p => {
+    const st = { trigger: p, containerAnimation: run, toggleActions: "play none none reverse" };
+    gsap.from(p.querySelectorAll(".fpanel__no, .fpanel__place, .fpanel__city, .fpanel__role, .fpanel__line"), {
+      y: 34, opacity: 0, duration: .85, ease: "expo.out", stagger: .07,
+      scrollTrigger: { ...st, start: "left 72%" },
+    });
+    gsap.to(p.querySelectorAll(".fact__r"), {
+      scaleX: 1, duration: .7, ease: "expo.out", stagger: .08,
+      scrollTrigger: { ...st, start: "left 60%" },
+    });
+    gsap.from(p.querySelectorAll(".fpanel__media, .fplate"), {
+      scale: .92, opacity: 0, duration: 1, ease: "expo.out",
+      scrollTrigger: { ...st, start: "left 80%" },
+    });
   });
-  ctx.textBaseline = "alphabetic";
 }
-function animateMap(ts) {
-  const t = ts / 1000;
-  nodes.forEach(n => {
-    if (REDUCED) { n.dx = n.x; n.dy = n.y; return; }
-    n.dx = n.x + Math.sin(t * n.sp + n.ph) * 3;
-    n.dy = n.y + Math.cos(t * n.sp * .8 + n.ph) * 3;
+
+/* ============================================================= TIME STACK
+   Career cards that come to rest one under the other, each new card riding
+   up over the last. The resting is pure CSS `position: sticky`; GSAP only
+   scales and dims the card being covered, so if the tween never runs the
+   section is still a perfectly readable list.
+   ========================================================================= */
+function buildStack() {
+  const host = $("#stackRun"); if (!host) return;
+  const list = [...EXPERIENCE].reverse();          // oldest at the back, current on top
+  const total = String(list.length).padStart(2, "0");
+  /* Watermark year: the LAST year the period touches, not the first. Two of
+     these periods begin in 2025, and stamping 2025 on both reads as a mistake;
+     taking the closing year gives an ascending 2024 / 2025 / 2026 / Now. */
+  const yearOf = e => {
+    const ys = String(e.when).match(/\d{4}/g);
+    return ys ? ys[ys.length - 1] : "Now";
+  };
+
+  host.innerHTML = list.map((e, i) => {
+    const now = /^current$/i.test(e.when);
+    /* Each role names the systems that came out of it, and each one opens the
+       same drawer as the register — so a claim on the CV is one click from
+       the thing itself rather than something you have to take on trust. */
+    const built = (e.systems || []).map(id => byId[id]).filter(Boolean);
+    return `
+    <article class="tcard${now ? " is-now" : ""}" style="--i:${i}">
+      <span class="tcard__year" aria-hidden="true">${esc(yearOf(e))}</span>
+      <div class="tcard__bar">
+        <span class="tcard__when">${esc(e.when)}</span>
+        ${now ? `<span class="tcard__now">Now</span>` : ""}
+        ${e.where ? `<span class="tcard__where">${e.where}</span>` : ""}
+        <span class="tcard__i">${String(i + 1).padStart(2, "0")} / ${total}</span>
+      </div>
+      <div class="tcard__in">
+        <h3>${e.role}</h3>
+        <span class="tcard__org">${e.org}</span>
+        <ul>${e.points.map(p => `<li>${p}</li>`).join("")}</ul>
+        ${built.length ? `
+          <div class="tcard__out">
+            <span class="tcard__outk">Shipped out of it</span>
+            <div class="tcard__sys">${built.map(p => `
+              <button class="syschip" data-open="${p.id}" data-cursor="Open"
+                      aria-label="Open ${esc(p.name)}">
+                <i class="syschip__d tone--${STATUS[p.status].tone}" aria-hidden="true"></i>
+                ${esc(p.name)}
+              </button>`).join("")}</div>
+          </div>` : ""}
+      </div>
+    </article>`;
+  }).join("") +
+    /* real trailing element, not padding on the run — see .stack__tail in the
+       stylesheet for why padding cannot give the last card its sticky range */
+    `<div class="stack__tail" aria-hidden="true"></div>`;
+
+  if (!HAS_GSAP || REDUCED) return;
+  const cards = $$(".tcard", host);
+
+  /* spine: draws down the section as the stack is worked through */
+  const spine = $("#stackSpine");
+  if (spine) {
+    gsap.fromTo(spine, { scaleY: 0 }, {
+      scaleY: 1, ease: "none", transformOrigin: "top center",
+      scrollTrigger: { trigger: host, start: "top 65%", end: "bottom 75%", scrub: true },
+    });
+  }
+
+  cards.forEach((card, i) => {
+    if (i === cards.length - 1) return;           // the top card is never covered
+    gsap.to(card, {
+      scale: .945, "--dim": .62, ease: "none",
+      /* dim only across the overlap itself, not the whole approach */
+      scrollTrigger: { trigger: cards[i + 1], start: "top 82%", end: "top 34%", scrub: true },
+    });
   });
-  drawMap();
-  requestAnimationFrame(animateMap);
 }
-const pickNode = (cx, cy) => {
-  let best = null, bd = 1e9;
-  nodes.forEach(n => { const d = Math.hypot(n.dx - cx, n.dy - cy);
-    if (d < n.r + 9 && d < bd) { bd = d; best = n; } });
-  return best;
+
+/* ================================================================ PARALLAX
+   Opt-in with data-parallax="<pixels of travel>". The element drifts by that
+   much across the whole time it is on screen — enough to feel like depth,
+   never enough to pull it out of its frame. */
+function wireParallax() {
+  if (!HAS_GSAP || REDUCED) return;
+  $$("[data-parallax]").forEach(el => {
+    const d = parseFloat(el.dataset.parallax) || 16;
+    gsap.fromTo(el, { y: -d }, {
+      y: d, ease: "none",
+      scrollTrigger: { trigger: el.parentElement || el, start: "top bottom", end: "bottom top", scrub: true },
+    });
+  });
+}
+
+/* ========================================================= TECHNOLOGY SPREAD
+   A tally, not a bar chart. Each row is one mark per system out of all 32, so
+   the denominator is on screen and the reader can count it — the old bars
+   normalised to the leader, which drew Python at full width when it is in 7
+   of 32, and made 2 look like a third of the work.
+
+   Counts come from the canonical names in TECH_ALIASES, because `stack` is
+   written per project ("Next.js 16", "Next.js App Router") and counting the
+   raw strings counted spellings instead of technologies.
+
+   One measure, one hue: this is a magnitude chart of a single series, so the
+   marks carry the accent and nothing here is colour-coded by category. The
+   count is printed on every row, so identity never rests on colour.
+   ========================================================================= */
+/* Case-insensitive, because the capability lines are written in sentence case
+   ("vector search") while the register writes them as they appear on the
+   project ("Vector search"). Exact-case stack strings resolve identically. */
+const ALIAS_CI = new Map(Object.entries(TECH_ALIASES).map(([k, v]) => [k.toLowerCase(), v]));
+const canonTech = s => {
+  const t = String(s).trim();
+  return ALIAS_CI.get(t.toLowerCase()) || t;
 };
 
-/* ============================================================ STACK CHART */
-const stackCounts = () => {
+function techIndex() {
   const m = new Map();
-  PROJECTS.forEach(p => p.stack.forEach(s => m.set(s.trim(), (m.get(s.trim()) || 0) + 1)));
-  return [...m.entries()].filter(([, n]) => n >= 2)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-};
-function renderChart() {
-  const host = $("#stackchart"); if (!host) return;
-  const rows = stackCounts(), max = rows[0][1];
-  host.innerHTML = rows.map(([k, n]) => `
-    <div class="bar">
-      <span class="bar__k">${esc(k)}</span>
-      <span class="bar__track"><span class="bar__fill" data-w="${(n / max * 100).toFixed(1)}"></span></span>
-      <span class="bar__v">${n}</span>
-    </div>`).join("");
+  PROJECTS.forEach(p => {
+    const seen = new Set();
+    p.stack.forEach(s => {
+      const c = canonTech(s);
+      if (seen.has(c)) return;          // one project counts once per technology
+      seen.add(c);
+      if (!m.has(c)) m.set(c, []);
+      m.get(c).push(p.name);
+    });
+  });
+  return m;
+}
+
+function renderSpread() {
+  const host = $("#spread"); if (!host) return;
+  const idx = techIndex(), N = PROJECTS.length;
+
+  const groups = TECH_GROUPS.map(([label, list]) => {
+    const rows = list
+      .map(t => [t, idx.get(t) || []])
+      .filter(([, u]) => u.length >= 2)
+      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+    return [label, rows];
+  }).filter(([, rows]) => rows.length);
+
+  host.innerHTML = groups.map(([label, rows]) => `
+    <section class="spg">
+      <h3 class="spg__k">${esc(label)}<i></i><b>${rows.length}</b></h3>
+      ${rows.map(([t, used]) => `
+        <div class="trow" tabindex="0" data-used="${esc(used.join(" · "))}"
+             data-tech="${esc(t)}" data-cursor="${used.length} / ${N}">
+          <span class="trow__k">${esc(t)}</span>
+          <span class="trow__track" aria-hidden="true">${
+            Array.from({ length: N }, (_, i) =>
+              `<i${i < used.length ? ' class="on"' : ""}></i>`).join("")
+          }</span>
+          <span class="trow__v">${used.length}</span>
+          <span class="sr">${esc(t)}: used in ${used.length} of ${N} systems — ${esc(used.join(", "))}.</span>
+        </div>`).join("")}
+    </section>`).join("");
+
+  const note = $("#spreadNote");
+  if (note) note.textContent = `One mark per system · ${N} on the register`;
+
+  /* hover / focus readout — names the systems behind the row */
+  const tip = $("#spreadTip");
+  if (tip) {
+    const show = el => {
+      tip.innerHTML = `<b>${esc(el.dataset.tech)}</b><span>${esc(el.dataset.used)}</span>`;
+      const box = (tip.offsetParent || host).getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      tip.classList.add("is-on");
+      tip.style.left = clamp(r.left - box.left, 0, Math.max(0, box.width - tip.offsetWidth)) + "px";
+      tip.style.top = (r.bottom - box.top + 6) + "px";
+    };
+    const hide = () => tip.classList.remove("is-on");
+    host.addEventListener("pointerover", e => {
+      const row = e.target.closest(".trow"); row ? show(row) : hide();
+    });
+    host.addEventListener("pointerleave", hide);
+    host.addEventListener("focusin", e => {
+      const row = e.target.closest(".trow"); if (row) show(row);
+    });
+    host.addEventListener("focusout", hide);
+  }
+
+  if (!HAS_GSAP || REDUCED) return;
+  $$(".spg", host).forEach(g => {
+    gsap.from(g.querySelectorAll(".trow__track i.on"), {
+      scaleX: 0, transformOrigin: "left center", duration: .5, ease: "expo.out",
+      stagger: { each: .012, from: "start" },
+      scrollTrigger: { trigger: g, start: "top 88%" },
+    });
+  });
 }
 
 /* ======================================================== COMMAND PALETTE */
@@ -648,8 +814,8 @@ function buildPaletteItems(q) {
   const out = [];
   const push = (name, sub, kind, run) => out.push({ name, sub, kind, run });
   PROJECTS.forEach(p => push(p.name, `${STATUS[p.status].label} · ${p.code}`, "Project", () => openDrawer(p.id)));
-  [["work", "Selected work"], ["index", "Full index"], ["map", "Deployment map"],
-   ["about", "About"], ["contact", "Contact"]]
+  [["index", "The register"], ["field", "The field log"],
+   ["track", "The time stack"], ["about", "About"], ["contact", "Contact"]]
     .forEach(([id, l]) => push(l, "Jump to section", "Section", () => jump(id)));
   push(currentTheme() === "dark" ? "Switch to light" : "Switch to dark", "Toggle appearance",
        "Action", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
@@ -671,21 +837,25 @@ function renderPalette() {
   if (!palette.items.length) { list.innerHTML = `<div class="palette__empty">Nothing matches that.</div>`; return; }
   palette.idx = clamp(palette.idx, 0, palette.items.length - 1);
   list.innerHTML = palette.items.map((it, i) => `
-    <div class="pitem" data-i="${i}" data-active="${i === palette.idx}" role="option">
+    <div class="pitem" id="pitem-${i}" data-i="${i}" data-active="${i === palette.idx}"
+         role="option" aria-selected="${i === palette.idx}">
       <div class="pitem__t"><div class="pitem__n">${esc(it.name)}</div>
         <div class="pitem__s">${esc(it.sub)}</div></div>
       <span class="pitem__k">${esc(it.kind)}</span></div>`).join("");
+  /* the input keeps focus, so the active row has to be named for a reader */
+  $("#pq").setAttribute("aria-activedescendant", "pitem-" + palette.idx);
   list.querySelector('[data-active="true"]')?.scrollIntoView({ block: "nearest" });
 }
 function openPalette() {
   palette.open = true; palette.idx = 0;
   $("#scrim").classList.add("is-on"); $("#palette").classList.add("is-on");
   $("#pq").value = ""; renderPalette();
-  setTimeout(() => $("#pq").focus(), 40);
+  trapFocus($("#palette"), $("#pq"));
 }
 function closePalette() {
   palette.open = false;
   $("#scrim").classList.remove("is-on"); $("#palette").classList.remove("is-on");
+  releaseFocus($("#palette"));
 }
 
 /* ================================================================ LIGHTBOX */
@@ -780,9 +950,13 @@ function wireShots() {
 function openLightbox(pid, i) {
   const p = byId[pid]; if (!p || !p.shots.length) return;
   Object.assign(lb, { open: true, shots: p.shots, i, title: p.name });
+  const src = $("#lbsrc");
+  if (src) src.textContent = "Captured " + shotSource(p);
+  /* paint before revealing, or the first frame shows an image with no src */
+  paintLightbox();
   $("#lightbox").classList.add("is-on");
   document.body.classList.add("is-locked");
-  paintLightbox();
+  trapFocus($("#lightbox"), $("#lbclose"));
 }
 function paintLightbox() {
   const s = lb.shots[lb.i], img = $("#lbimg");
@@ -798,12 +972,27 @@ function paintLightbox() {
 const stepLightbox = d => { lb.i = (lb.i + d + lb.shots.length) % lb.shots.length; paintLightbox(); };
 function closeLightbox() {
   lb.open = false; $("#lightbox").classList.remove("is-on");
+  releaseFocus($("#lightbox"));
   if (!drawer.open) document.body.classList.remove("is-locked");
 }
 
+/* =================================================================== HELP */
+function toggleHelp(force) {
+  const el = $("#help");
+  const on = force != null ? force : !el.classList.contains("is-on");
+  el.classList.toggle("is-on", on);
+  $("#scrim").classList.toggle("is-on", on);
+  if (on) trapFocus(el, el); else releaseFocus(el);
+}
+
 /* ================================================================ HELPERS */
+/* Both nav bars retract on a downward scroll. A jump triggered FROM one of
+   them is a downward scroll, so without this the bar you just tapped slides
+   away under your thumb. Hold it open until the jump settles. */
+let navHold = 0;
 function jump(id) {
   const el = document.getElementById(id); if (!el) return;
+  navHold = performance.now() + 1200;
   smoother.to(el.getBoundingClientRect().top + window.scrollY - 10);
 }
 async function copyText(text, btn) {
@@ -826,27 +1015,104 @@ function countUp(el) {
 }
 
 /* ======================================================== STATIC SECTIONS */
+/* The headline figures are counted from the register rather than typed into
+   the markup, so adding or removing a project can never leave a stale number
+   on the page claiming something the index below it contradicts. */
+function renderFigures() {
+  const counts = {
+    projects: PROJECTS.length,
+    live: PROJECTS.filter(p => p.status === "production").length,
+    shots: PROJECTS.reduce((n, p) => n + p.shots.length, 0),
+  };
+  $$("[data-stat]").forEach(el => {
+    const v = counts[el.dataset.stat];
+    if (v != null) el.dataset.count = v;
+  });
+}
+
+/* ================================================== CAPABILITY & EDUCATION
+   The capability list used to be a flat set of bullets — exactly the kind of
+   self-reported claim the rest of this page refuses to make. Each entry is now
+   resolved against the register, so anything that has actually carried work
+   says how many systems it is in, and anything that has not says nothing at
+   all rather than borrowing credibility it has not earned.
+   ========================================================================= */
+const rxEsc = s => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+
+/* Resolve one capability line to the number of systems behind it.
+   First an exact match on the separators these lines actually use, then a
+   word-boundary search for a canonical name sitting inside the phrase — so
+   "Self-hosted Ollama deployment" finds Ollama, while "SQL" never matches
+   inside "PostgreSQL". Returns 0 when nothing on the register backs it. */
+function skillEvidence(item, idx) {
+  let best = 0, who = "";
+  /* whole line first: some lines are themselves an alias ("HTML & CSS"), and
+     splitting them on the ampersand would destroy the match before it is tried */
+  const whole = idx.get(canonTech(item));
+  if (whole) { best = whole.length; who = canonTech(item); }
+  String(item).split(/\s*[·,&/]\s*|\s+and\s+/i).map(s => s.trim()).filter(Boolean)
+    .forEach(f => {
+      const hit = idx.get(canonTech(f));
+      if (hit && hit.length > best) { best = hit.length; who = canonTech(f); }
+    });
+  if (!best) for (const [k, v] of idx) {
+    if (k.length < 3 || v.length <= best) continue;
+    if (new RegExp("(^|[^A-Za-z0-9])" + rxEsc(k) + "([^A-Za-z0-9]|$)", "i").test(item)) {
+      best = v.length; who = k;
+    }
+  }
+  return { n: best, who };
+}
+
 function renderRecord() {
-  const tl = list => list.map(e => `
-    <div class="tl" data-up>
-      <div class="tl__when">${esc(e.when)}</div>
-      <div><h3>${e.role}</h3><span class="tl__org">${e.org}</span>
-        <ul>${e.points.map(p => `<li>${p}</li>`).join("")}</ul></div></div>`).join("");
-  $("#experience").innerHTML = tl(EXPERIENCE);
-  $("#education").innerHTML  = tl(EDUCATION);
-  $("#skills").innerHTML = SKILLS.map(([t, items]) => `
-    <div class="skillcol"><h4>${esc(t)}</h4>
-      <ul>${items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("");
+  const idx = techIndex(), N = PROJECTS.length;
+
+  /* ---- capability ---- */
+  const skills = $("#skills");
+  if (skills) skills.innerHTML = SKILLS.map(([group, items], gi) => {
+    const rows = items.map(i => ({ label: i, ...skillEvidence(i, idx) }));
+    const seen = rows.filter(r => r.n > 0).length;
+    return `
+    <article class="cap" data-up>
+      <div class="cap__h">
+        <span class="cap__n">${String(gi + 1).padStart(2, "0")}</span>
+        <h3>${esc(group)}</h3>
+      </div>
+      <ul class="cap__l">${rows.map(r => `
+        <li class="${r.n ? "is-seen" : ""}"${r.n ? ` title="${esc(r.who)} — ${r.n} of ${N} systems"` : ""}>
+          <span>${r.label}</span>${r.n ? `<b>${r.n}<i class="sr"> systems on the register</i></b>` : ""}
+        </li>`).join("")}
+      </ul>
+      ${seen ? `<span class="cap__f">${seen} of ${rows.length} carry work on the register</span>` : ""}
+    </article>`;
+  }).join("");
+
+  /* ---- education ---- */
+  const edu = $("#education");
+  if (edu) edu.innerHTML = EDUCATION.map(e => {
+    const yr = (String(e.when).match(/\d{4}/) || [""])[0];
+    return `
+    <article class="ed" data-up>
+      <span class="ed__yr" aria-hidden="true">${esc(yr)}</span>
+      <span class="ed__when">${esc(e.when)}</span>
+      <h3>${e.role}</h3>
+      <span class="ed__org">${e.org}</span>
+      <p>${e.points.join(" ")}</p>
+    </article>`;
+  }).join("");
 }
 
 /* ================================================================= WIRING */
 function init() {
   readTokens();
+  renderFigures();
   renderRecord();
-  renderChart();
-  buildShowcase();
+  renderSpread();
   buildIndex();
+  buildField();
+  buildStack();
   buildMarquee();
+  wireParallax();
   wirePeek();
   heroField();
   heroTicker();
@@ -854,34 +1120,6 @@ function init() {
   smoother.init();
   tickClock(); setInterval(tickClock, 1000);
   $$("[data-split]").forEach(splitWords);
-
-  /* map */
-  if (cv) {
-    sizeMap(); drawMap(); requestAnimationFrame(animateMap);
-    new ResizeObserver(() => { sizeMap(); if (HAS_GSAP) ScrollTrigger.refresh(); }).observe(cv.parentElement);
-    const tip = $("#maptip");
-    cv.addEventListener("mousemove", ev => {
-      const r = cv.getBoundingClientRect();
-      const cx = ev.clientX - r.left, cy = ev.clientY - r.top;
-      const hit = pickNode(cx, cy);
-      if (hit !== hover) { hover = hit; cursor.setLabel(hit ? "Open" : ""); }
-      if (!hit) { tip.classList.remove("is-on"); return; }
-      const shared = nodes.filter(n => n !== hit && sharesStack(hit, n)).length;
-      tip.innerHTML = `<b>${esc(hit.p.name)}</b>
-        <span><em>${STATUS[hit.p.status].label}</em> · ${esc(hit.p.code)}</span>
-        <span>${esc(DOMAINS[hit.p.domain])}</span>
-        <span>${shared} share a technology · click to open</span>`;
-      tip.classList.add("is-on");
-      tip.style.left = clamp(cx - tip.offsetWidth / 2, 6, mapW - tip.offsetWidth - 6) + "px";
-      tip.style.top  = Math.max(6, cy - tip.offsetHeight - 14) + "px";
-    });
-    cv.addEventListener("mouseleave", () => { hover = null; tip.classList.remove("is-on"); cursor.setLabel(""); });
-    cv.addEventListener("click", ev => {
-      const r = cv.getBoundingClientRect();
-      const hit = pickNode(ev.clientX - r.left, ev.clientY - r.top);
-      if (hit) openDrawer(hit.p.id);
-    });
-  }
 
   /* delegated clicks */
   document.addEventListener("click", ev => {
@@ -899,7 +1137,7 @@ function init() {
   $("#theme").addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
   $$("[data-copy]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.copy, b)));
   $("#openpalette").addEventListener("click", openPalette);
-  $("#scrim").addEventListener("click", () => { closePalette(); $("#help").classList.remove("is-on"); });
+  $("#scrim").addEventListener("click", () => { closePalette(); toggleHelp(false); });
   $("#pq").addEventListener("input", () => { palette.idx = 0; renderPalette(); });
   $("#plist").addEventListener("click", ev => {
     const it = ev.target.closest(".pitem");
@@ -939,33 +1177,35 @@ function init() {
     if (drawer.open) { if (ev.key === "Escape") closeDrawer(); return; }
     if (typing) return;
     if (ev.key.toLowerCase() === "t") setTheme(currentTheme() === "dark" ? "light" : "dark");
-    else if (ev.key === "?") { $("#help").classList.toggle("is-on"); $("#scrim").classList.toggle("is-on"); }
-    else if (ev.key.toLowerCase() === "g") jump("work");
-    else if (ev.key === "Escape") { $("#help").classList.remove("is-on"); $("#scrim").classList.remove("is-on"); }
+    else if (ev.key === "?") toggleHelp();
+    else if (ev.key.toLowerCase() === "g") jump("index");
+    else if (ev.key === "Escape") toggleHelp(false);
   });
 
   /* progress bar + hide-on-scroll-down bar */
-  const prog = $("#progress"), bar = $(".statusbar");
+  const prog = $("#progress"), bar = $(".statusbar"), mob = $("#mobnav");
   let lastY = 0;
   addEventListener("scroll", () => {
     const h = document.documentElement;
     const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
     prog.style.transform = `scaleX(${p})`;
-    if (h.scrollTop > 260 && h.scrollTop > lastY) bar.classList.add("is-hidden");
-    else bar.classList.remove("is-hidden");
+    const away = h.scrollTop > 260 && h.scrollTop > lastY && performance.now() > navHold;
+    bar.classList.toggle("is-hidden", away);
+    if (mob) mob.classList.toggle("is-hidden", away);
     lastY = h.scrollTop;
   }, { passive: true });
 
   /* section spy */
-  const links = new Map($$(".statnav a").map(a => [a.getAttribute("href").slice(1), a]));
+  /* both navs share the spy — the status bar above 1080px, the bottom rail below */
+  const navLinks = $$(".statnav a, .mobnav a");
   const spy = new IntersectionObserver(es => es.forEach(e => {
-    const a = links.get(e.target.id);
-    if (a && e.isIntersecting) {
-      links.forEach(l => l.removeAttribute("aria-current"));
-      a.setAttribute("aria-current", "true");
-    }
+    if (!e.isIntersecting) return;
+    navLinks.forEach(l =>
+      l.getAttribute("href") === "#" + e.target.id
+        ? l.setAttribute("aria-current", "true")
+        : l.removeAttribute("aria-current"));
   }), { rootMargin: "-45% 0px -50% 0px" });
-  ["work", "index", "map", "about", "contact"]
+  ["index", "field", "track", "about", "contact"]
     .map(id => document.getElementById(id)).filter(Boolean).forEach(s => spy.observe(s));
 
   /* counters + chart bars, once each */
@@ -976,10 +1216,7 @@ function init() {
     }), { threshold }).observe(el);
   };
   once($(".stats"), () => $$("[data-count]").forEach(countUp));
-  once($("#stackchart"), () => $$("#stackchart .bar__fill").forEach((el, i) => {
-    setTimeout(() => { el.style.transition = "width .9s cubic-bezier(.19,1,.22,1)";
-                       el.style.width = el.dataset.w + "%"; }, i * 45);
-  }), .15);
+  /* the technology tally runs its own per-group ScrollTrigger in renderSpread */
 
   /* preloader gates the entrance animation */
   document.body.classList.add("is-locked");

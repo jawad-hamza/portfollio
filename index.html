@@ -1,11 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jawad Hamza — Deployment Register</title>
 <meta name="description" content="Software developer, forward deployed. Systems running in a regional blood centre, a district hospital, a university genetics lab and on retail floors.">
+<meta name="author" content="Jawad Hamza">
+<meta name="theme-color" content="#0B0D10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#E8E9EC" media="(prefers-color-scheme: light)">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jawad Hamza — Deployment Register">
+<meta property="og:description" content="Software deployed into live operations: a regional blood centre, a district hospital, a university genetics lab and retail floors.">
+<meta property="og:image" content="assets/img/bb-screening.jpg">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jawad Hamza — Deployment Register">
+<meta name="twitter:description" content="Software deployed into live operations: a regional blood centre, a district hospital, a university genetics lab and retail floors.">
+<meta name="twitter:image" content="assets/img/bb-screening.jpg">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0D10'/%3E%3Ctext x='16' y='22' font-family='Archivo,Helvetica,Arial,sans-serif' font-size='17' font-weight='800' fill='%233DFF9E' text-anchor='middle'%3EJH%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
 
 <div class="grain" aria-hidden="true"></div>
 
@@ -33,14 +53,19 @@
       <span class="brand__sub">Deployment Register</span>
     </a>
     <nav class="statnav" aria-label="Sections">
-      <a href="#work">Work</a>
-      <a href="#index">Index</a>
-      <a href="#map">Map</a>
+      <a href="#index">Work</a>
+      <a href="#field">Field</a>
       <a href="#about">About</a>
+      <a href="#track">Track</a>
       <a href="#contact">Contact</a>
     </nav>
     <span class="clock" id="clock">—</span>
-    <button class="kbtn" id="openpalette" data-cursor="Search">Search <kbd>Ctrl</kbd><kbd>K</kbd></button>
+    <button class="kbtn" id="openpalette" data-cursor="Search">
+      <svg class="kbtn__i" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/>
+      </svg>
+      <span class="kbtn__t">Search</span><kbd>Ctrl</kbd><kbd>K</kbd>
+    </button>
     <button class="tgl" id="theme" role="switch" aria-checked="false"
             aria-label="Switch between light and dark" title="Light / dark (T)">
       <span class="tgl__knob"></span>
@@ -84,7 +109,7 @@
       <div class="hero__actions">
         <a class="btn btn--solid" href="Jawad-Hamza-Portfolio.pdf" data-cursor="Get"><span>Portfolio PDF</span></a>
         <button class="btn" data-copy="jawwadhamzas@gmail.com" data-cursor="Copy"><span>Email</span></button>
-        <a class="btn" href="#work" data-cursor="Go"><span>See the work</span></a>
+        <a class="btn" href="#index" data-cursor="Go"><span>See the work</span></a>
       </div>
     </div>
   </div>
@@ -100,17 +125,6 @@
 
 <!-- ============================================================== MARQUEE -->
 <div class="marquee" aria-hidden="true"><div class="marquee__in" id="marquee"></div></div>
-
-<!-- ====================================================== PINNED SHOWCASE -->
-<section class="showcase" id="showcase">
-  <div class="show__viewport">
-    <div class="show__track" id="showTrack"></div>
-    <div class="show__rail" id="showRail"><i></i></div>
-  </div>
-</section>
-
-<!-- ============================================================== ANCHOR -->
-<section class="sect" id="work" style="padding-block:0"><span class="sr">Selected work</span></section>
 
 <!-- =============================================================== INDEX -->
 <section class="sect sect--edge" id="index">
@@ -129,36 +143,29 @@
   </div>
 </section>
 
-<!-- ================================================================= MAP -->
-<section class="mapsect" id="map">
-  <div class="wrap">
+<!-- =========================================================== FIELD LOG
+     Pinned horizontal run through the four systems that are actually in
+     production somewhere. Built by buildField() from FIELD in data.js. -->
+<section class="field" id="field" aria-label="Where the software runs">
+  <div class="field__intro wrap">
     <div class="sect__head">
       <div>
-        <span class="sect__num">The estate</span>
-        <h2 data-split>Where it all runs</h2>
+        <span class="sect__num">The field log</span>
+        <h2 data-split>Where it actually runs</h2>
       </div>
       <p class="sect__intro">
-        Sized by scope, coloured by status, clustered by domain. Hover a node to light up
-        every system that shares a technology with it.
+        Four places where somebody opens this software to do their job. Not repositories —
+        a blood centre, a district hospital, a university lab and a studio floor.
       </p>
     </div>
-    <div class="map" data-up>
-      <div class="map__head">
-        <span class="map__title">Deployment map</span>
-        <span class="map__hint">Hover · click to open</span>
-      </div>
-      <div style="position:relative">
-        <canvas id="mapcv" width="1200" height="520"
-                aria-label="Interactive map of 32 systems grouped by domain and coloured by deployment status. Every system is also listed as text in the index above."></canvas>
-        <div class="maptip" id="maptip" role="status"></div>
-      </div>
-      <div class="map__legend">
-        <span><i style="background:var(--live)"></i>Production</span>
-        <span><i style="background:var(--pilot)"></i>Pilot</span>
-        <span><i style="background:var(--violet)"></i>In dev</span>
-        <span><i style="background:var(--grey-tone)"></i>Delivered</span>
-        <span style="margin-left:auto">Size = scope</span>
-      </div>
+  </div>
+
+  <div class="field__viewport">
+    <div class="field__track" id="fieldTrack"></div>
+    <div class="field__hud">
+      <span class="field__count" id="fieldCount">01 <i>/ 04</i></span>
+      <div class="field__rail"><i id="fieldRail"></i></div>
+      <span class="field__hint">Scroll</span>
     </div>
   </div>
 </section>
@@ -169,18 +176,18 @@
     <div class="stats">
       <div class="stat">
         <span class="stat__k">Systems built</span>
-        <span class="stat__v" data-count="32">0</span>
+        <span class="stat__v" data-stat="projects">0</span>
         <span class="stat__n">Operational platforms, web products, AI tooling, lab work</span>
       </div>
       <div class="stat">
         <span class="stat__k">Live deployments</span>
-        <span class="stat__v" data-count="4">0</span>
+        <span class="stat__v" data-stat="live">0</span>
         <span class="stat__n">Blood centre, district hospital, genetics lab, software house</span>
       </div>
       <div class="stat">
         <span class="stat__k">Screens captured</span>
-        <span class="stat__v" data-count="47">0</span>
-        <span class="stat__n">From the running applications — none of them mockups</span>
+        <span class="stat__v" data-stat="shots">0</span>
+        <span class="stat__n">Captured from the software itself — none of them mockups</span>
       </div>
       <div class="stat">
         <span class="stat__k">Years shipping</span>
@@ -194,12 +201,13 @@
         <span class="sect__num">Technology spread</span>
         <h2 data-split>What I reach for</h2>
       </div>
-      <p class="sect__intro">
-        Counted from the register itself — how many of the 32 systems use each technology.
-      </p>
+
     </div>
-    <div class="stackchart" id="stackchart"></div>
-    <p class="chartnote">Projects per technology · derived from the work, not self-reported</p>
+    <div class="spreadwrap">
+      <div class="spread" id="spread"></div>
+      <div class="spreadtip" id="spreadTip" role="status"></div>
+    </div>
+    <p class="spreadnote" id="spreadNote"></p>
   </div>
 </section>
 
@@ -215,7 +223,8 @@
 
     <div class="cols" style="margin-bottom:clamp(2.4rem,7vh,4.5rem)">
       <figure class="portrait" style="margin:0" data-up>
-        <img src="assets/img/portrait-studio.jpg" alt="Jawad Hamza in the studio" loading="lazy">
+        <img src="assets/img/portrait-studio.jpg" alt="Jawad Hamza in the studio"
+             loading="lazy" data-parallax="18">
       </figure>
       <div class="about" data-up>
         <p>
@@ -242,18 +251,46 @@
       </div>
     </div>
 
-    <div class="cols" style="margin-bottom:clamp(2rem,6vh,3.5rem)">
-      <div><span class="sect__num">Experience</span></div>
-      <div class="timeline" id="experience"></div>
+  </div>
+</section>
+
+<!-- ========================================================== TIME STACK
+     Each role is a card that stacks on the one before it as you scroll,
+     earlier cards scaling back and dimming. Built by buildStack(). -->
+<section class="stack" id="track" aria-label="Experience">
+  <div class="wrap">
+    <div class="sect__head">
+      <div>
+        <span class="sect__num">The time stack</span>
+        <h2 data-split>How I got here</h2>
+      </div>
+
     </div>
-    <div class="cols" style="margin-bottom:clamp(2rem,6vh,3.5rem)">
-      <div><span class="sect__num">Education</span></div>
-      <div class="timeline" id="education"></div>
+  </div>
+  <div class="wrap stack__body">
+    <div class="stack__spine" aria-hidden="true"><i id="stackSpine"></i></div>
+    <div class="stack__run" id="stackRun"></div>
+  </div>
+</section>
+
+<!-- ====================================================== RECORD, CONT. -->
+<section class="sect sect--edge" id="record2">
+  <div class="wrap">
+    <div class="sect__head">
+      <div>
+        <span class="sect__num">Capability</span>
+        <h2 data-split>What I can be handed</h2>
+      </div>
     </div>
-    <div class="cols">
-      <div><span class="sect__num">Capability</span></div>
-      <div class="skills" id="skills"></div>
+    <div class="caps" id="skills"></div>
+
+    <div class="sect__head" style="margin-top:clamp(2.4rem,7vh,4.5rem)">
+      <div>
+        <span class="sect__num">Education</span>
+        <h2 data-split>Still studying</h2>
+      </div>
     </div>
+    <div class="edus" id="education"></div>
   </div>
 </section>
 
@@ -281,11 +318,21 @@
   </div>
 </footer>
 
+<!-- ====================================================== MOBILE SECTION NAV
+     The status-bar nav is hidden under 1080px; without this the sections are
+     unreachable on a phone except by scrolling the whole page. -->
+<nav class="mobnav" id="mobnav" aria-label="Sections">
+  <a href="#index">Work</a>
+  <a href="#field">Field</a>
+  <a href="#track">Track</a>
+  <a href="#contact">Contact</a>
+</nav>
+
 <!-- ============================================================= OVERLAYS -->
 <div class="peek" id="peek" aria-hidden="true"></div>
 <div class="scrim" id="scrim"></div>
 
-<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Project detail">
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Project detail" inert>
   <div class="drawer__scrim" id="dscrim"></div>
   <div class="drawer__panel">
     <div class="drawer__bar">
@@ -296,12 +343,13 @@
   </div>
 </div>
 
-<div class="palette" id="palette" role="dialog" aria-label="Command palette" aria-modal="true">
+<div class="palette" id="palette" role="dialog" aria-label="Command palette" aria-modal="true" inert>
   <div class="palette__in">
     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" style="opacity:.5">
       <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/>
     </svg>
-    <input id="pq" type="text" placeholder="Search projects and sections…" autocomplete="off">
+    <input id="pq" type="text" placeholder="Search projects and sections…" autocomplete="off"
+           role="combobox" aria-expanded="true" aria-controls="plist" aria-autocomplete="list">
     <kbd>Esc</kbd>
   </div>
   <div class="palette__list" id="plist" role="listbox"></div>
@@ -312,18 +360,18 @@
   </div>
 </div>
 
-<div class="help" id="help" role="dialog" aria-label="Keyboard shortcuts">
+<div class="help" id="help" role="dialog" aria-label="Keyboard shortcuts" aria-modal="true" inert>
   <h3>Shortcuts</h3>
   <dl>
     <div><dt><kbd>Ctrl</kbd><kbd>K</kbd></dt><dd>Command palette</dd></div>
-    <div><dt><kbd>G</kbd></dt><dd>Go to the work</dd></div>
+    <div><dt><kbd>G</kbd></dt><dd>Go to the register</dd></div>
     <div><dt><kbd>T</kbd></dt><dd>Toggle theme</dd></div>
     <div><dt><kbd>&larr;</kbd><kbd>&rarr;</kbd></dt><dd>Move through screenshots</dd></div>
     <div><dt><kbd>Esc</kbd></dt><dd>Close anything</dd></div>
   </dl>
 </div>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-label="Screenshot viewer" aria-modal="true">
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Screenshot viewer" aria-modal="true" inert>
   <div class="lb__bar">
     <span class="lb__t" id="lbtitle"></span>
     <span class="lb__c" id="lbcap"></span>
@@ -337,7 +385,7 @@
   </div>
   <div class="lb__foot">
     <span>&larr; &rarr; navigate</span><span>Esc close</span>
-    <span>Captured from the running application</span>
+    <span id="lbsrc">Captured from the running application</span>
   </div>
 </div>
 
@@ -345,3 +393,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="assets/data.js"></script>
 <script src="assets/app.js"></script>
+</body>
+</html>

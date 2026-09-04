@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-09-04T18:33:48.959Z",
+        "reason": "only src-less img in this file is #lbimg, the lightbox viewer element; paintLightbox() in assets/app.js assigns its src before the dialog is revealed"
+      }
+    ]
+  }
+}

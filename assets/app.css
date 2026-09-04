@@ -15,10 +15,13 @@
   --line-soft:#191E26;
   --line-strong:#39424F;
 
-  --text:#EFEDE8;
-  --text-dim:#B9BCC1;
-  --muted:#858C96;
-  --faint:#565D67;
+  /* Secondary text steps. Every one of these clears 4.5:1 on --ground, because
+     they are used almost entirely for small uppercase mono labels — the exact
+     size at which a low-contrast grey stops being readable. */
+  --text:#EFEDE8;                  /* 12.9:1 */
+  --text-dim:#B9BCC1;              /* 10.2:1 */
+  --muted:#9AA1AB;                 /*  7.6:1 */
+  --faint:#7C8490;                 /*  5.2:1 */
 
   --accent:#3DFF9E;                /* terminal green — the brand accent */
   --accent-2:#9CFFCE;
@@ -57,7 +60,7 @@
   :root:not([data-theme="dark"]){
     --ground:#E8E9EC; --ground-2:#E0E2E7; --raise:#FFFFFF; --raise-2:#F3F4F7; --raise-3:#E9EBEF;
     --line:#CED3DA; --line-soft:#DDE1E7; --line-strong:#AEB6C2;
-    --text:#0E1015; --text-dim:#343A44; --muted:#59606B; --faint:#858E9A;
+    --text:#0E1015; --text-dim:#343A44; --muted:#4E5561; --faint:#5F6875;
     --accent:#0B7A46; --accent-2:#075C34; --accent-ink:#FFFFFF;
     --accent-wash:rgba(11,122,70,.11); --accent-line:rgba(11,122,70,.36);
     --live:#0E7490; --pilot:#8A5C04; --violet:#5B4BC4; --grey-tone:#59606B;
@@ -71,7 +74,7 @@
 :root[data-theme="light"]{
   --ground:#E8E9EC; --ground-2:#E0E2E7; --raise:#FFFFFF; --raise-2:#F3F4F7; --raise-3:#E9EBEF;
   --line:#CED3DA; --line-soft:#DDE1E7; --line-strong:#AEB6C2;
-  --text:#0E1015; --text-dim:#343A44; --muted:#59606B; --faint:#858E9A;
+  --text:#0E1015; --text-dim:#343A44; --muted:#4E5561; --faint:#5F6875;
   --accent:#0B7A46; --accent-2:#075C34; --accent-ink:#FFFFFF;
   --accent-wash:rgba(11,122,70,.11); --accent-line:rgba(11,122,70,.36);
   --live:#0E7490; --pilot:#8A5C04; --violet:#5B4BC4; --grey-tone:#59606B;
@@ -97,6 +100,9 @@ a{color:inherit}
 img{display:block;max-width:100%}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 input{font:inherit;color:inherit}
+/* the UA's [hidden]{display:none} loses to any author `display`, so a
+   component that sets its own display would ignore el.hidden without this */
+[hidden]{display:none!important}
 ::selection{background:var(--accent);color:var(--accent-ink)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:3px}
 
@@ -190,6 +196,14 @@ input{font:inherit;color:inherit}
   background:color-mix(in srgb,var(--raise) 70%, transparent);padding:.36rem .5rem .36rem .6rem;
   border-radius:40px;white-space:nowrap;transition:border-color .3s,color .3s}
 .kbtn:hover{border-color:var(--accent-line);color:var(--text)}
+.kbtn__i{width:12px;height:12px;flex:none;display:none}
+/* on a phone the two kbd hints are meaningless and the word costs room,
+   so the control collapses to a 44px icon target */
+@media (max-width:620px){
+  .kbtn{padding:0;width:38px;height:38px;justify-content:center;gap:0}
+  .kbtn__i{display:block}
+  .kbtn__t,.kbtn kbd{display:none}
+}
 kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong);background:var(--raise-2);
   color:var(--muted);padding:.12rem .28rem;border-radius:3px;line-height:1}
 .tgl{position:relative;width:58px;height:28px;border-radius:30px;border:1px solid var(--line);
@@ -212,6 +226,32 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:81;pointer-events:none;
   transform-origin:left;transform:scaleX(0);background:var(--accent)}
 
+/* ------------------------------------------------------- mobile section nav
+   .statnav disappears at 1080px. Below that this takes over: a fixed rail
+   pinned to the bottom, out of the thumb's way but always reachable. It slides
+   out while the page is scrolling down and comes back on the way up, matching
+   the status bar. Targets are 44px tall and sit above the home indicator. */
+.mobnav{
+  position:fixed;left:0;right:0;bottom:0;z-index:82;display:none;
+  justify-content:space-around;align-items:stretch;gap:.15rem;
+  padding:.3rem max(var(--pad),.5rem) calc(.3rem + env(safe-area-inset-bottom));
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  transition:transform .5s var(--e);
+}
+.mobnav.is-hidden{transform:translateY(110%)}
+.mobnav a{
+  flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border-radius:8px;position:relative;
+  transition:color .3s,background .3s;
+}
+.mobnav a[aria-current="true"]{color:var(--accent);background:var(--accent-wash)}
+.mobnav a:active{background:var(--raise)}
+@media (max-width:1080px){ .mobnav{display:flex} }
+/* the bottom rail would otherwise sit on top of the last line of the footer */
+@media (max-width:1080px){ footer{padding-bottom:calc(4.6rem + env(safe-area-inset-bottom))} }
+
 /* ------------------------------------------------------- type reveal utils */
 .reveal-line{display:block;overflow:hidden}
 .reveal-line > i{display:block;font-style:inherit;transform:translateY(110%)}
@@ -225,10 +265,8 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   /* the ellipse sits fully inside its box and fades to nothing before any edge,
      so there is no hard line where the box ends */
   background:radial-gradient(46% 42% at 30% 60%, var(--accent-wash), transparent 72%)}
-.hero__in{position:relative;padding-block:clamp(2rem,7vh,5rem)}
-
 .hero__field{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.hero__in{position:relative;z-index:3}
+.hero__in{position:relative;z-index:3;padding-block:clamp(2rem,7vh,5rem)}
 
 .hero__live{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
   margin-top:clamp(1.1rem,3vh,1.9rem);min-height:1.4rem}
@@ -304,82 +342,7 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   display:flex;align-items:center;gap:2.2rem}
 .marquee span::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
 
-/* ========================================================= PINNED SHOWCASE */
-.showcase{position:relative;overflow:hidden}
-.show__viewport{height:100vh;display:flex;align-items:center;position:relative}
-.show__track{display:flex;gap:clamp(1rem,2.4vw,2.2rem);padding-inline:var(--pad);will-change:transform}
-
-.panel{
-  flex:0 0 clamp(280px,74vw,880px);height:clamp(400px,76vh,680px);
-  border-radius:12px;overflow:hidden;background:var(--raise);
-  position:relative;display:block;text-align:left;isolation:isolate;
-  box-shadow:0 0 0 1px var(--line), var(--shadow);
-  transition:box-shadow .6s var(--e),transform .6s var(--e);
-}
-.panel:hover{box-shadow:0 0 0 1px var(--accent-line), var(--shadow-pop);transform:translateY(-6px)}
-
-.panel__media{position:absolute;inset:0;overflow:hidden;background:var(--raise-2)}
-.panel__media img{
-  position:absolute;top:0;left:-6%;width:112%;height:100%;
-  object-fit:cover;object-position:top center;
-  will-change:transform;transition:filter .8s var(--e);filter:saturate(.92);
-}
-.panel:hover .panel__media img{filter:saturate(1.06)}
-/* readable plate under the overlaid copy, whatever the screenshot is */
-/* The copy sits on top of screenshots that may be almost white, so the scrim
-   has to be a real base, not a hint. Two stops do the work: a near-solid foot
-   under the text, and a light top wash so the number stays legible too. */
-.panel__scrim{position:absolute;inset:0;
-  background:
-    linear-gradient(to top, rgba(7,9,12,.97) 0%, rgba(7,9,12,.94) 22%,
-                            rgba(7,9,12,.72) 38%, rgba(7,9,12,.24) 55%,
-                            rgba(7,9,12,.04) 70%, rgba(7,9,12,.34) 100%)}
-
-.panel__glyph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:.4rem;
-  background:radial-gradient(70% 80% at 50% 25%, #232935, #12161C)}
-.panel__glyph b{font-family:var(--display);font-size:clamp(4rem,9vw,8rem);font-weight:800;
-  letter-spacing:-.06em;line-height:.85;color:#EFEDE8}
-.panel__glyph span{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;
-  text-transform:uppercase;color:#3DFF9E}
-.panel__mods{margin-top:.9rem;max-width:74%;text-align:center;font-family:var(--mono);
-  font-size:.56rem;letter-spacing:.09em;color:#7A828D;line-height:1.9}
-
-.panel__no{position:absolute;top:1.2rem;left:1.4rem;z-index:3;
-  font-family:var(--mono);font-weight:700;font-size:.66rem;letter-spacing:.2em;
-  color:rgba(255,255,255,.82);
-  padding:.3rem .55rem;border:1px solid rgba(255,255,255,.28);border-radius:30px;
-  background:rgba(7,9,12,.45);backdrop-filter:blur(6px);
-  transition:color .5s var(--e),border-color .5s var(--e)}
-.panel:hover .panel__no{color:var(--accent-2);border-color:var(--accent-2)}
-
-.panel__content{position:absolute;left:0;right:0;bottom:0;z-index:3;
-  padding:clamp(1.1rem,2.4vw,1.9rem);display:flex;flex-direction:column;gap:.55rem;
-  color:#EFEDE8}
-.panel__meta{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
-.panel__content h3{font-size:clamp(1.2rem,2.5vw,2rem);letter-spacing:-.038em;line-height:1.02;
-  text-transform:uppercase;color:#fff;text-shadow:0 2px 22px rgba(0,0,0,.55)}
-.panel__content p{font-size:clamp(.85rem,1.15vw,1rem);font-weight:300;line-height:1.45;
-  color:rgba(239,237,232,.76);max-width:46ch}
-.panel__stack{font-family:var(--mono);font-size:.56rem;letter-spacing:.13em;text-transform:uppercase;
-  color:rgba(239,237,232,.5);margin-top:.15rem}
-.panel__cta{display:flex;align-items:center;gap:.5rem;margin-top:.7rem;
-  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--accent-2)}
-.panel__cta i{display:block;width:0;height:1px;background:var(--accent-2);
-  transition:width .6s var(--e)}
-.panel:hover .panel__cta i{width:52px}
-/* the stamp sits on an image, so it needs its own light-on-dark treatment */
-/* on an image the stamp needs a solid chip, not a translucent one */
-.panel__meta .stamp{color:#EFEDE8;border-color:rgba(255,255,255,.34);
-  background:rgba(7,9,12,.72)}
-.panel__meta .stamp--live::before{background:#22D3EE}
-.panel__meta .stamp--amber::before{background:#E8A317}
-.panel__meta .stamp--violet::before{background:#A78BFA}
-.panel__meta .stamp--grey::before{background:#A7AEB8}
-.panel__meta .code{color:rgba(239,237,232,.62)}
-
-/* ---- status stamp + site code (shared by panels, index rows, drawer) ---- */
+/* ---- status stamp + site code (shared by index rows and the drawer) ---- */
 .stamp{font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;padding:.26rem .45rem;border:1px solid;border-radius:30px;
   white-space:nowrap;display:inline-flex;align-items:center;gap:.32rem;line-height:1}
@@ -390,10 +353,6 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .stamp--grey{color:var(--grey-tone);border-color:var(--line-strong)}
 .code{font-family:var(--mono);font-size:.55rem;letter-spacing:.13em;color:var(--faint);
   text-transform:uppercase}
-
-.show__rail{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(1.2rem,4vh,2.4rem);
-  height:1px;background:var(--line)}
-.show__rail i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);transform-origin:left}
 
 /* ============================================================ INDEX LIST */
 .sect{padding-block:clamp(3rem,9vh,7rem);position:relative;z-index:2;background:var(--ground)}
@@ -411,12 +370,18 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .row{
   display:grid;grid-template-columns:3.2rem 1fr auto auto;gap:1.2rem;align-items:center;
   width:100%;padding:clamp(.85rem,2vh,1.35rem) 0;border-bottom:1px solid var(--line);
-  text-align:left;position:relative;transition:padding-left .55s var(--e);
+  text-align:left;position:relative;
 }
 .row::before{content:"";position:absolute;inset:0;background:var(--raise);
   transform:scaleY(0);transform-origin:bottom;transition:transform .5s var(--e);z-index:-1}
 .row:hover::before{transform:scaleY(1);transform-origin:top}
-.row:hover{padding-left:1.1rem}
+/* The number and title slide in on hover. This used to animate padding-left,
+   which relaid out the whole grid every frame — and because the title sits in
+   the 1fr track, a name near the wrap point flipped between one and two lines
+   mid-transition. Translating the two left columns is composited and leaves
+   the right-aligned stack where padding-left left it anyway. */
+.row__n,.row__name{transition:translate .55s var(--e)}
+.row:hover .row__n,.row:hover .row__name{translate:1.1rem 0}
 .row__n{font-family:var(--mono);font-size:.58rem;color:var(--faint);font-variant-numeric:tabular-nums;
   transition:color .4s}
 .row:hover .row__n{color:var(--accent)}
@@ -430,10 +395,13 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   .row__meta,.row .stamp{display:none}
 }
 
-/* ------------------------------------------------ the lighter entries
-   Everything that isn't a headline system: mentioned, not staged. Each chip
-   carries the name and a status dot; hovering (or focusing) it unfolds the
-   one-line summary and the stack, and clicking opens the same drawer. */
+/* ------------------------------------------------- the lighter entries
+   Everything that is not a headline system. These were rounded pills, which
+   put 24 identical lozenges on the page and read as a third variation on the
+   same list. This is the back-of-book index instead: ruled entries in
+   columns, numbered, each one a leader line from the name to its register.
+   Small, dense, scannable — a different object from the display-type rows
+   above it rather than another restatement of them. */
 .also{margin-top:clamp(2.4rem,7vh,4.6rem)}
 .also__head{display:flex;align-items:flex-end;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
   padding-bottom:1rem;border-bottom:1px solid var(--line)}
@@ -450,53 +418,55 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .filt button b{font-weight:700;opacity:.6;margin-left:.35rem}
 .filt button[aria-pressed="true"] b{opacity:.75}
 
-.chips-grid{display:flex;flex-wrap:wrap;gap:.5rem;padding-top:1.1rem}
-.chip{
-  display:grid;grid-template-columns:auto auto 0fr auto;align-items:center;gap:0 .6rem;
-  padding:.62rem .8rem .62rem .9rem;border:1px solid var(--line);border-radius:999px;
-  background:var(--ground-2);text-align:left;max-width:100%;
-  transition:grid-template-columns .6s var(--e),border-color .35s,background .35s,
-             opacity .4s,transform .5s var(--e);
+.also__intro{font-size:.92rem;font-weight:300;line-height:1.55;color:var(--text-dim);
+  max-width:70ch;padding-top:1.1rem}
+.also__intro.is-swap{animation:swapIn .45s var(--e) both}
+
+.ridx{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  column-gap:clamp(1.4rem,4vw,3.4rem);margin-top:1.3rem;
+  border-top:1px solid var(--line-soft)}
+.ridx__i{
+  display:grid;grid-template-columns:1.9rem auto minmax(1rem,1fr) auto;
+  align-items:baseline;gap:.55rem;width:100%;text-align:left;
+  padding:.62rem .35rem .62rem .1rem;border-bottom:1px solid var(--line-soft);
+  transition:background .35s,opacity .4s;
 }
-.chip:hover,.chip:focus-visible{grid-template-columns:auto auto 1fr auto;border-color:var(--accent-line);
-  background:var(--raise);outline:none}
-.chip__dot{width:6px;height:6px;border-radius:50%;background:var(--grey-tone);flex:none}
-.chip__dot.tone--live{background:var(--live)}
-.chip__dot.tone--amber{background:var(--pilot)}
-.chip__dot.tone--violet{background:var(--violet)}
-.chip__name{font-family:var(--display);font-weight:700;font-size:.86rem;letter-spacing:-.02em;
-  color:var(--text);white-space:nowrap;transition:color .3s}
-.chip:hover .chip__name,.chip:focus-visible .chip__name{color:var(--accent)}
-.chip__more{min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:.1rem;
-  opacity:0;transform:translateX(-6px);transition:opacity .35s .1s,transform .5s var(--e)}
-.chip:hover .chip__more,.chip:focus-visible .chip__more{opacity:1;transform:none}
-.chip__tag{font-family:var(--body);font-weight:300;font-size:.86rem;color:var(--text-dim);
-  white-space:nowrap;line-height:1.2;padding-left:.2rem}
-.chip__stack{font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--faint);white-space:nowrap;padding-left:.2rem}
-.chip__arrow{font-family:var(--mono);font-size:.7rem;color:var(--faint);transition:color .3s,transform .5s var(--e)}
-.chip:hover .chip__arrow,.chip:focus-visible .chip__arrow{color:var(--accent);transform:translateX(3px)}
-.chip[data-off]{opacity:.18;transform:scale(.96);pointer-events:none}
-.chips-grid:hover .chip:not(:hover):not([data-off]){opacity:.55}
-@media (hover:none){
-  .chip{grid-template-columns:auto auto 1fr auto}
-  .chip__more{opacity:1;transform:none}
-  .chip__tag{white-space:normal}
-  .chip__stack{display:none}
-  .chips-grid:hover .chip:not(:hover){opacity:1}
-}
+.ridx__i:hover,.ridx__i:focus-visible{background:var(--raise);outline:none}
+.ridx__n2{font-family:var(--mono);font-size:.56rem;color:var(--faint);
+  font-variant-numeric:tabular-nums;transition:color .35s}
+.ridx__i:hover .ridx__n2,.ridx__i:focus-visible .ridx__n2{color:var(--accent)}
+.ridx__name{font-family:var(--body);font-size:.98rem;font-weight:400;color:var(--text-dim);
+  line-height:1.3;transition:color .35s}
+.ridx__i:hover .ridx__name,.ridx__i:focus-visible .ridx__name{color:var(--accent)}
+.ridx__lead{height:1px;background:var(--line);align-self:center;opacity:.75}
+.ridx__tail{display:flex;align-items:center;gap:.45rem;flex:none}
+.ridx__reg{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;color:var(--faint);
+  text-transform:uppercase}
+.ridx__dot{width:5px;height:5px;border-radius:50%;background:var(--grey-tone);flex:none}
+.ridx__dot.tone--live{background:var(--live)}
+.ridx__dot.tone--amber{background:var(--pilot)}
+.ridx__dot.tone--violet{background:var(--violet)}
+.ridx__i[data-off]{opacity:.22;pointer-events:none}
+
+.ridx__legend{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem}
+.ridx__legend span{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);
+  font-size:.53rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.ridx__legend i{width:5px;height:5px;border-radius:50%}
+
 @media (max-width:760px){
   .also__head{flex-direction:column;align-items:flex-start}
-  .chip{padding:.55rem .7rem .55rem .8rem}
-  .chip__name{font-size:.8rem}
-  .chip__tag{font-size:.8rem}
+  .ridx{grid-template-columns:1fr}
+  .ridx__i{grid-template-columns:1.7rem auto minmax(.6rem,1fr) auto;min-height:44px;align-items:center}
+  .ridx__name{font-size:.92rem}
 }
 
 /* floating preview that follows the cursor over the index */
 .peek{
   position:fixed;top:0;left:0;z-index:70;width:clamp(180px,20vw,300px);aspect-ratio:16/10;
   border-radius:6px;overflow:hidden;pointer-events:none;opacity:0;
-  transform:translate(-50%,-50%) scale(.9);transition:opacity .35s,scale .45s var(--e);
+  /* scale lives in its own property, not in `transform` — JS rewrites transform
+     every frame to follow the pointer and would otherwise wipe the entry pop */
+  transform:translate(-50%,-50%);scale:.92;transition:opacity .35s,scale .45s var(--e);
   box-shadow:var(--shadow-pop);border:1px solid var(--line-strong);
 }
 .peek.is-on{opacity:1;scale:1}
@@ -507,28 +477,191 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .peek__glyph span{font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
 @media (max-width:900px){ .peek{display:none} }
 
-/* ================================================================== MAP */
-.mapsect{position:relative;background:var(--ground-2);border-block:1px solid var(--line);
-  padding-block:clamp(2.4rem,6vh,4rem)}
-.map{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;
-  background:radial-gradient(120% 120% at 60% 0%, var(--raise-2), var(--ground) 75%);box-shadow:var(--shadow)}
-.map__head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:.7rem .9rem;
-  border-bottom:1px solid var(--line-soft)}
-.map__title{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
-.map__hint{font-family:var(--mono);font-size:.54rem;letter-spacing:.12em;color:var(--faint);
-  margin-left:auto;text-transform:uppercase}
-.map__legend{display:flex;gap:.8rem;flex-wrap:wrap;padding:.6rem .9rem;border-top:1px solid var(--line-soft)}
-.map__legend span{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);
-  font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.map__legend i{width:7px;height:7px;border-radius:50%}
-.map canvas{display:block;width:100%;height:auto;touch-action:pan-y}
-.maptip{position:absolute;pointer-events:none;z-index:5;opacity:0;transform:translateY(5px);
-  transition:opacity .18s,transform .18s;background:var(--raise-3);border:1px solid var(--line-strong);
-  border-radius:5px;padding:.5rem .62rem;box-shadow:var(--shadow-pop);max-width:240px}
-.maptip.is-on{opacity:1;transform:none}
-.maptip b{display:block;font-family:var(--display);font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
-.maptip span{display:block;font-family:var(--mono);font-size:.53rem;letter-spacing:.07em;color:var(--muted);line-height:1.55}
-.maptip em{font-style:normal;color:var(--accent)}
+/* ============================================================== FIELD LOG
+   A pinned horizontal run of full-viewport panels, one per production
+   deployment. The register above it is a list you scan; this is an editorial
+   spread you read — split layout, deep parallax on the media, and facts that
+   rule themselves in as each panel arrives.
+   ========================================================================= */
+.field{position:relative;z-index:2;background:var(--ground-2);border-block:1px solid var(--line)}
+.field__intro{padding-block:clamp(3rem,9vh,7rem) clamp(1.4rem,4vh,2.4rem)}
+.field__viewport{position:relative;height:100vh;overflow:hidden;display:flex;align-items:stretch}
+.field__track{display:flex;will-change:transform}
+
+.fpanel{
+  flex:0 0 100vw;height:100vh;display:grid;align-items:center;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(1.6rem,5vw,5.5rem);
+  padding:calc(var(--bar-h) + clamp(2rem,7vh,4.5rem)) var(--pad) clamp(5rem,12vh,7rem);
+}
+.fpanel__body{min-width:0;display:flex;flex-direction:column;gap:clamp(.7rem,2vh,1.15rem)}
+.fpanel__no{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);display:flex;align-items:center;gap:.7rem}
+.fpanel__no::after{content:"";flex:1;max-width:120px;height:1px;background:var(--accent-line)}
+.fpanel__place{font-family:var(--display);font-weight:800;text-transform:uppercase;
+  letter-spacing:-.05em;line-height:.9;font-size:clamp(1.9rem,4.6vw,4.2rem);text-wrap:balance}
+.fpanel__city{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-dim)}
+.fpanel__role{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--line);border-radius:30px;padding:.3rem .6rem;
+  align-self:flex-start}
+.fpanel__line{font-size:clamp(.95rem,1.25vw,1.14rem);font-weight:300;line-height:1.55;
+  color:var(--text-dim);max-width:46ch}
+.fpanel__open{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);display:inline-flex;align-items:center;gap:.5rem;align-self:flex-start;
+  padding:.4rem 0}
+.fpanel__open i{display:block;width:34px;height:1px;background:var(--accent);
+  transform:scaleX(1);transform-origin:left;transition:transform .5s var(--e)}
+.fpanel__open:hover i{transform:scaleX(1.7)}
+
+/* facts: label, a rule that draws itself in, then the value */
+.facts{display:flex;flex-direction:column;margin-top:clamp(.4rem,2vh,1rem)}
+.fact{display:grid;grid-template-columns:auto minmax(1.5rem,1fr) auto;align-items:baseline;
+  gap:.75rem;padding-block:.62rem;border-bottom:1px solid var(--line-soft)}
+.fact__k{font-family:var(--mono);font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted)}
+.fact__r{height:1px;background:var(--line-strong);transform:scaleX(0);transform-origin:left;
+  align-self:center}
+.fact__v{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:-.02em;
+  color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+
+/* media frame — the image is oversized and drifts against the track */
+.fpanel__media{position:relative;height:min(64vh,560px);border-radius:12px;overflow:hidden;
+  background:var(--raise);box-shadow:0 0 0 1px var(--line), var(--shadow)}
+.fpanel__media img{position:absolute;left:0;top:-9%;width:100%;height:118%;
+  object-fit:cover;object-position:top center;will-change:transform}
+/* no copy is laid over the media, so it carries no scrim — a screenshot of
+   real software is the evidence here and it stays legible edge to edge */
+
+/* deployments with nothing publishable get type, never a stock photograph */
+.fplate{position:relative;height:min(64vh,560px);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;
+  padding:clamp(1.5rem,4vw,3rem);text-align:center;
+  background:radial-gradient(75% 85% at 50% 20%, var(--raise-3), var(--raise) 78%);
+  box-shadow:0 0 0 1px var(--line), var(--shadow)}
+.fplate b{font-family:var(--display);font-weight:800;letter-spacing:-.06em;line-height:.82;
+  font-size:clamp(5rem,13vw,11rem);color:var(--text)}
+.fplate span{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent)}
+.fplate small{font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;line-height:2;
+  color:var(--faint);max-width:34ch;margin-top:.8rem}
+
+/* progress head-up display, pinned to the foot of the viewport */
+.field__hud{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(1.4rem,4vh,2.6rem);
+  display:flex;align-items:center;gap:1.1rem;pointer-events:none}
+.field__count{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:var(--text);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.field__count i{font-style:normal;color:var(--faint)}
+.field__rail{flex:1;height:1px;background:var(--line);position:relative}
+.field__rail i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent)}
+.field__hint{font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap}
+
+/* Under 900px, or on any touch device, the pin is dropped entirely and the
+   panels become an ordinary vertical read. A horizontal pin fought with
+   thumb scrolling is worse than no effect at all. */
+@media (max-width:900px),(pointer:coarse){
+  .field__viewport{height:auto;overflow:visible;display:block}
+  .field__track{flex-direction:column;transform:none!important}
+  .fpanel{flex:none;width:100%;height:auto;grid-template-columns:1fr;
+    gap:clamp(1.2rem,4vh,2rem);padding:clamp(2.4rem,7vh,4rem) var(--pad)}
+  .fpanel__media,.fplate{height:clamp(240px,44vh,420px)}
+  .fpanel__media img{top:0;height:100%;transform:none!important}
+  .field__hud{position:static;padding:0 var(--pad) clamp(2.4rem,7vh,4rem)}
+}
+
+/* ============================================================= TIME STACK
+   Sticky, not pinned: each card comes to rest a little lower than the one
+   before it and the next card rides up over the top. Doing it with `sticky`
+   rather than a pinned timeline means it degrades to a plain list of cards
+   the moment anything goes wrong, and it costs no layout thrash.
+   ========================================================================= */
+.stack{padding-block:clamp(3rem,9vh,7rem) clamp(1rem,3vh,2.5rem);
+  position:relative;z-index:2;background:var(--ground);border-top:1px solid var(--line)}
+/* the gap between cards is the scroll distance a card holds the screen for
+   before the next one rides over it — too small and the stack flickers past */
+/* a spine down the left that draws itself as the stack is worked through */
+.stack__body{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);
+  gap:clamp(.9rem,2.5vw,2.2rem)}
+.stack__spine{position:relative;width:1px;background:var(--line);border-radius:1px}
+.stack__spine i{position:absolute;inset:0;display:block;background:var(--accent);
+  transform:scaleY(0);transform-origin:top center}
+@media (max-width:700px){ .stack__body{grid-template-columns:minmax(0,1fr)} .stack__spine{display:none} }
+
+/* The trailing padding is what lets the LAST card stick. A sticky box is
+   released as soon as its containing block runs out, and the final card's
+   bottom IS the container's bottom — so with no room after it, it never comes
+   to rest while every card before it stacks.
+   It has to be a real trailing ELEMENT, not padding on the run. The sticky
+   containing block for a flex item is the flex container's *content* box, and
+   padding sits outside that — so padding-bottom bought exactly nothing and the
+   last card still slid straight past its offset.
+   The spacer also has to clear the card's own height, because a card can only
+   park while containerBottom >= stickyTop + cardHeight. */
+.stack__run{display:flex;flex-direction:column;gap:clamp(4rem,32vh,17rem)}
+.stack__tail{flex:none;height:clamp(22rem,66vh,38rem)}
+.tcard{
+  position:sticky;top:calc(var(--bar-h) + clamp(.8rem,3vh,2rem) + var(--i) * 15px);
+  border:1px solid var(--line);border-radius:14px;background:var(--raise);
+  box-shadow:var(--shadow);overflow:hidden;transform-origin:center top;--dim:0;
+}
+/* A covered card is dimmed by a scrim laid INSIDE it, never by lowering the
+   card's own opacity — a translucent card lets the cards stacked behind it
+   read straight through, and four CVs printed on top of each other is not a
+   design, it is a smear. The card itself stays fully opaque. */
+.tcard::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:var(--ground);opacity:var(--dim)}
+.tcard__bar{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+  padding:.72rem 1.1rem;border-bottom:1px solid var(--line-soft);background:var(--raise-2)}
+.tcard__when{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent)}
+.tcard__i{margin-left:auto;font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;
+  color:var(--faint);font-variant-numeric:tabular-nums}
+.tcard__now{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-ink);background:var(--accent);
+  padding:.2rem .45rem;border-radius:20px}
+.tcard__in{padding:clamp(1.2rem,3.5vw,2.2rem)}
+.tcard h3{font-size:clamp(1.15rem,2.5vw,1.95rem);letter-spacing:-.035em;line-height:1.04;
+  text-transform:uppercase;margin-bottom:.35rem}
+.tcard__org{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);
+  display:block;margin-bottom:1rem}
+.tcard ul{list-style:none;margin:0;padding:0;display:grid;gap:.55rem;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.tcard li{font-size:.92rem;font-weight:300;line-height:1.5;color:var(--text-dim);
+  display:flex;gap:.6rem}
+.tcard li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--accent);
+  margin-top:.62rem;flex:none}
+/* the year, set huge and faint behind the card — the card is the content,
+   this is just the period it belongs to, readable at a glance while scrolling */
+/* sized and centred to sit wholly inside the card — bleeding it off the top
+   edge just looked like clipped text rather than a deliberate crop */
+.tcard__year{position:absolute;top:50%;right:clamp(.6rem,2vw,1.4rem);translate:0 -50%;
+  z-index:0;pointer-events:none;
+  font-family:var(--display);font-weight:800;letter-spacing:-.06em;line-height:.9;
+  font-size:clamp(3.2rem,8vw,6.5rem);color:var(--text);opacity:.05}
+.tcard.is-now .tcard__year{color:var(--accent);opacity:.09}
+.tcard__bar,.tcard__in{position:relative;z-index:1}
+.tcard__where{font-family:var(--mono);font-size:.55rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--faint)}
+.tcard.is-now{border-color:var(--accent-line)}
+
+/* what came out of the period, linked to the register entry itself */
+.tcard__out{margin-top:clamp(1rem,2.5vw,1.5rem);padding-top:.9rem;
+  border-top:1px solid var(--line-soft)}
+.tcard__outk{display:block;font-family:var(--mono);font-size:.53rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:.6rem}
+.tcard__sys{display:flex;flex-wrap:wrap;gap:.4rem}
+.syschip{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);
+  font-size:.58rem;letter-spacing:.06em;color:var(--text-dim);
+  border:1px solid var(--line);background:var(--raise-2);padding:.4rem .68rem;
+  border-radius:30px;transition:color .3s,border-color .3s,background .3s;position:relative}
+.syschip:hover{color:var(--accent);border-color:var(--accent-line);background:var(--raise-3)}
+.syschip__d{width:5px;height:5px;border-radius:50%;background:var(--grey-tone);flex:none}
+.syschip__d.tone--live{background:var(--live)}
+.syschip__d.tone--amber{background:var(--pilot)}
+.syschip__d.tone--violet{background:var(--violet)}
+
+@media (max-width:700px){ .tcard{top:calc(var(--bar-h) + .6rem + var(--i) * 9px)} }
 
 /* ================================================================ FIGURES */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
@@ -547,20 +680,67 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums}
 .stat__n{font-size:.83rem;color:var(--muted);line-height:1.45}
 
-/* stack chart */
-.stackchart{display:flex;flex-direction:column;gap:.45rem;max-width:860px}
-.bar{display:grid;grid-template-columns:minmax(96px,150px) 1fr auto;gap:.8rem;align-items:center;
-  padding:.2rem .25rem;border-radius:4px;transition:background .3s}
-.bar:hover{background:var(--raise)}
-.bar__k{font-family:var(--mono);font-size:.62rem;color:var(--text-dim);white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis}
-.bar__track{height:10px;background:var(--raise-2);border-radius:0 5px 5px 0;overflow:hidden}
-.bar__fill{height:100%;width:0;background:var(--accent);border-radius:0 5px 5px 0;transition:background .3s}
-.bar:hover .bar__fill{background:var(--accent-2)}
-.bar__v{font-family:var(--mono);font-size:.62rem;color:var(--muted);font-variant-numeric:tabular-nums;
-  min-width:1.5rem;text-align:right}
-.chartnote{font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--faint);margin-top:1.2rem}
+/* ======================================================== TECHNOLOGY SPREAD
+   A tally rather than a bar chart. Every row lays out all 32 systems as
+   discrete marks and fills the ones that use that technology, so the reader
+   sees the fraction instead of a length normalised to whatever happens to be
+   in first place. One measure, one hue — the groups are headings, not colours.
+   ========================================================================= */
+/* the tooltip is a sibling of the grid, not a child — renderSpread() rewrites
+   the grid's innerHTML, which would delete a tooltip parked inside it */
+.spreadwrap{position:relative}
+.spread{display:grid;gap:clamp(1.6rem,4vw,3rem) clamp(1.8rem,5vw,4.5rem);
+  grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.spg{break-inside:avoid}
+.spg__k{display:flex;align-items:center;gap:.7rem;font-family:var(--mono);font-size:.56rem;
+  font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin-bottom:.5rem}
+.spg__k i{flex:1;height:1px;background:var(--line);display:block}
+.spg__k b{font-weight:400;color:var(--faint);font-variant-numeric:tabular-nums}
+
+.trow{
+  display:grid;grid-template-columns:minmax(6.5rem,9.5rem) minmax(0,1fr) 1.6rem;
+  align-items:center;gap:.75rem;padding:.42rem .3rem;border-radius:5px;
+  transition:background .3s;outline:none;
+}
+.trow:hover,.trow:focus-visible{background:var(--raise)}
+.trow:focus-visible{box-shadow:0 0 0 1px var(--accent-line)}
+.trow__k{font-family:var(--mono);font-size:.62rem;letter-spacing:.04em;color:var(--text-dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
+.trow:hover .trow__k,.trow:focus-visible .trow__k{color:var(--text)}
+.trow__v{font-family:var(--mono);font-size:.66rem;color:var(--muted);text-align:right;
+  font-variant-numeric:tabular-nums;transition:color .3s}
+.trow:hover .trow__v,.trow:focus-visible .trow__v{color:var(--accent)}
+
+/* 32 slots, one per system on the register */
+.trow__track{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;height:13px;
+  align-items:stretch}
+.trow__track i{display:block;border-radius:1.5px;background:var(--line);
+  transition:background .35s}
+.trow__track i.on{background:var(--accent)}
+.trow:hover .trow__track i:not(.on),
+.trow:focus-visible .trow__track i:not(.on){background:var(--line-strong)}
+
+/* readout: which systems are actually behind the row */
+.spreadtip{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translateY(4px);
+  transition:opacity .18s,transform .18s;max-width:min(420px,88vw);
+  background:var(--raise-3);border:1px solid var(--line-strong);border-radius:6px;
+  padding:.55rem .7rem;box-shadow:var(--shadow-pop)}
+.spreadtip.is-on{opacity:1;transform:none}
+.spreadtip b{display:block;font-family:var(--display);font-size:.78rem;font-weight:700;
+  color:var(--text);margin-bottom:.25rem}
+.spreadtip span{display:block;font-family:var(--mono);font-size:.53rem;letter-spacing:.06em;
+  color:var(--muted);line-height:1.7}
+
+.spreadnote{font-family:var(--mono);font-size:.55rem;letter-spacing:.11em;
+  color:var(--faint);margin-top:1.4rem;line-height:1.9;max-width:78ch}
+
+@media (max-width:640px){
+  .trow{grid-template-columns:minmax(5.5rem,7.5rem) minmax(0,1fr) 1.4rem;gap:.55rem;
+    padding:.5rem .25rem;min-height:34px}
+  .trow__track{gap:1px;height:12px}
+  .trow__k{font-size:.58rem}
+}
 
 /* ================================================================= ABOUT */
 .cols{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(1.5rem,4vw,4rem);align-items:start}
@@ -573,30 +753,61 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .about p + p{margin-top:1.1rem}
 .about strong{color:var(--text);font-weight:500}
 
-.timeline{display:flex;flex-direction:column}
-.tl{display:grid;grid-template-columns:minmax(130px,190px) 1fr;gap:clamp(1rem,3vw,2.4rem);
-  padding-block:clamp(1.1rem,3vh,1.7rem);border-top:1px solid var(--line)}
-@media (max-width:700px){ .tl{grid-template-columns:1fr;gap:.4rem} }
-.tl__when{font-family:var(--mono);font-size:.58rem;letter-spacing:.13em;color:var(--faint);
-  text-transform:uppercase;padding-top:.35rem}
-.tl h3{font-size:clamp(1rem,1.7vw,1.3rem);letter-spacing:-.028em;margin-bottom:.15rem}
-.tl__org{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;color:var(--accent);
-  margin-bottom:.6rem;display:block}
-.tl ul{margin:0;padding-left:1rem;display:flex;flex-direction:column;gap:.35rem}
-.tl li{font-size:.92rem;color:var(--text-dim);font-weight:300;line-height:1.55}
-.tl li::marker{color:var(--faint)}
+/* ================================================== CAPABILITY & EDUCATION
+   Capability is a claim, so every line that can be checked against the
+   register carries its count and the rest stay deliberately unmarked. The
+   numbered cards give the block the same register-like structure as the
+   index above rather than six loose bullet lists.
+   ========================================================================= */
+/* six groups: three columns fills exactly two rows. auto-fit gave four across
+   at desktop width and left two dead cells hanging off the second row. */
+.caps{display:grid;grid-template-columns:1fr;gap:clamp(.9rem,2vw,1.4rem)}
+@media (min-width:720px){ .caps{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:1120px){ .caps{grid-template-columns:repeat(3,1fr)} }
+.cap{border:1px solid var(--line);border-radius:12px;background:var(--raise);
+  padding:clamp(1rem,2.2vw,1.35rem);display:flex;flex-direction:column;
+  transition:border-color .4s,background .4s}
+.cap:hover{border-color:var(--accent-line);background:var(--raise-2)}
+.cap__h{display:flex;align-items:baseline;gap:.6rem;padding-bottom:.7rem;
+  border-bottom:1px solid var(--line-soft);margin-bottom:.85rem}
+.cap__n{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;color:var(--accent);
+  font-variant-numeric:tabular-nums}
+.cap__h h3{font-family:var(--mono);font-size:.6rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text)}
 
-/* hairlines via box-shadow, not a gap background — an incomplete last row
-   would otherwise show as a solid empty block */
-.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px}
-.skillcol{background:var(--ground);padding:1.3rem;transition:background .4s;
-  box-shadow:0 0 0 1px var(--line-soft)}
-.skillcol:hover{background:var(--raise)}
-.skillcol h4{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--accent);font-weight:500;margin-bottom:.8rem}
-.skillcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.36rem}
-.skillcol li{font-size:.86rem;color:var(--text-dim);font-weight:300;display:flex;gap:.5rem}
-.skillcol li::before{content:"";width:4px;height:4px;background:var(--faint);margin-top:.56rem;flex:none}
+.cap__l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.1rem;flex:1}
+.cap__l li{display:flex;align-items:baseline;gap:.6rem;padding:.34rem 0;
+  font-size:.88rem;font-weight:300;line-height:1.4;color:var(--muted)}
+.cap__l li span{flex:1;min-width:0}
+/* a line that has actually carried work reads at full strength and states how
+   much; one that has not is simply quieter, never dressed up to match */
+.cap__l li.is-seen{color:var(--text-dim)}
+.cap__l li b{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.06em;
+  color:var(--accent);background:var(--accent-wash);border:1px solid var(--accent-line);
+  border-radius:20px;padding:.1rem .38rem;flex:none;font-variant-numeric:tabular-nums;
+  line-height:1.5}
+.cap__f{display:block;margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--line-soft);
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--faint)}
+
+/* ---- education: two credentials, each carrying its target year ---- */
+.edus{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:clamp(.9rem,2vw,1.4rem)}
+.ed{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;
+  background:var(--raise);padding:clamp(1.1rem,2.4vw,1.6rem);
+  transition:border-color .4s,background .4s}
+.ed:hover{border-color:var(--accent-line);background:var(--raise-2)}
+.ed__yr{position:absolute;top:50%;right:clamp(.6rem,2vw,1.2rem);translate:0 -50%;z-index:0;
+  pointer-events:none;font-family:var(--display);font-weight:800;letter-spacing:-.06em;
+  line-height:.9;font-size:clamp(3rem,7vw,5.5rem);color:var(--text);opacity:.05}
+.ed > :not(.ed__yr){position:relative;z-index:1}
+.ed__when{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:.5rem}
+.ed h3{font-size:clamp(1rem,1.7vw,1.3rem);letter-spacing:-.028em;line-height:1.1;
+  margin-bottom:.2rem}
+.ed__org{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;color:var(--text-dim);
+  display:block;margin-bottom:.7rem}
+.ed p{font-size:.88rem;font-weight:300;line-height:1.5;color:var(--muted);max-width:44ch}
 
 /* =============================================================== CONTACT */
 .contact{padding-block:clamp(3.5rem,11vh,8rem);border-top:1px solid var(--line);
@@ -677,6 +888,12 @@ footer{padding:1.5rem 0 2.4rem;background:var(--ground);position:relative;z-inde
 .dlabel{font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.9rem;display:flex;align-items:center;gap:.7rem}
 .dlabel::after{content:"";flex:1;height:1px;background:var(--line)}
+/* provenance line: where these particular screens came from, and why these
+   and not others. It sits between the label and the strip so it is read
+   before the images, not discovered after them. */
+.shotnote{font-size:.88rem;font-weight:300;line-height:1.55;color:var(--text-dim);
+  max-width:62ch;margin:-.35rem 0 1rem;padding-left:.75rem;
+  border-left:2px solid var(--accent-line)}
 .shots{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:1rem;margin-bottom:1.6rem;
   scroll-snap-type:x proximity;overscroll-behavior-x:contain;cursor:grab;outline:none}
 .shots:focus-visible{box-shadow:0 0 0 1px var(--accent-line)}
@@ -765,6 +982,25 @@ footer{padding:1.5rem 0 2.4rem;background:var(--ground);position:relative;z-inde
 .help div:last-child{border-bottom:0}
 .help dt{flex:none;display:flex;gap:.25rem}
 .help dd{margin:0 0 0 auto;font-size:.85rem;color:var(--text-dim);text-align:right}
+
+/* ========================================================= TOUCH TARGETS
+   Several controls are deliberately small — a 28px-tall switch, 26px strip
+   arrows, a slim filter pill. They read correctly and they are fine under a
+   mouse, but a finger needs 44px. Rather than inflate the design on every
+   screen, each one keeps its drawn size and grows an invisible hit area to
+   the minimum only where the pointer is coarse. */
+@media (pointer:coarse){
+  .tgl,.kbtn,.shots__nav button,.filt button,.drawer__x,.lb__x,.chip{position:relative}
+  .tgl::after,.kbtn::after,.shots__nav button::after,.filt button::after,
+  .drawer__x::after,.lb__x::after,.chip::after{
+    content:"";position:absolute;left:50%;top:50%;translate:-50% -50%;
+    width:max(100%,44px);height:max(100%,44px);
+  }
+  .lb__nav{width:52px;height:52px}
+  /* .btn clips its own fill sweep with overflow:hidden, which would clip a
+     phantom hit area too — so it gets real padding instead */
+  .btn{padding:.92rem 1.3rem}
+}
 
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}

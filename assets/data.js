@@ -47,6 +47,8 @@ const PROJECTS = [
       ["Role", "Forward deployed engineer &amp; developer"],
       ["Built to", "The centre's departmental manuals — mobilisation, collection, medical officer, processing, serology, distribution, and the blood bank KPI set"],
     ],
+    shotSrc: "from the counter-flow prototype",
+    shotNote: "The clickable prototype built for departmental sign-off. Every clinical rule on screen carries its SOP code and manual page reference, so the staff who work to those manuals could verify the logic before a line of the real system was written.",
     stack: ["ASP.NET Core 8 MVC", "C#", "Entity Framework Core", "SQL Server", "Razor"],
     modules: {
       title: "Shipped modules", count: "11 controllers",
@@ -57,7 +59,18 @@ const PROJECTS = [
               ["Modules","Feature control"],["Account","Authentication"],
               ["Home","Operations dashboard"]],
     },
-    shots: [],
+    shots: [
+      { src: "assets/img/bb-home.jpg",      cap: "Counter picker · one PC, one station" },
+      { src: "assets/img/bb-reception.jpg", cap: "Step 01 · CNIC recall and donor registration" },
+      { src: "assets/img/bb-screening.jpg", cap: "Step 02 · UDHQ — one question, SOP code, deferral action" },
+      { src: "assets/img/bb-exam.jpg",      cap: "Step 02 · Physical examination and vitals ranges" },
+      { src: "assets/img/bb-donation.jpg",  cap: "Step 03 · Phlebotomy, DIN and bag weight" },
+      { src: "assets/img/bb-lab.jpg",       cap: "Step 04 · Units held in quarantine" },
+      { src: "assets/img/bb-lab-unit.jpg",  cap: "Step 04 · Grouping, TTI screening and release" },
+      { src: "assets/img/bb-issue.jpg",     cap: "Step 05 · Stock on hand by group and component" },
+      { src: "assets/img/bb-requests.jpg",  cap: "Step 05 · Ward requests awaiting crossmatch" },
+      { src: "assets/img/bb-compat.jpg",    cap: "Step 05 · Compatibility ladder by component" },
+    ],
   },
   {
     id: "lims", reg: "A", status: "production", domain: "health", weight: 2.8,
@@ -71,12 +84,9 @@ const PROJECTS = [
       ["Notable", "Interactive pedigree renderer driven from live relationship data"],
     ],
     stack: ["Django", "Python", "MySQL", "Class-based views", "Custom auth model"],
+    shotNote: "Only the sign-in screen is published. Everything past it is live patient and family data belonging to the lab.",
     shots: [
-      { src: "assets/img/lims.jpg",           cap: "Protected workspace · sign-in" },
-      { src: "assets/img/lims-dashboard.jpg", cap: "Laboratory overview · sample workflow" },
-      { src: "assets/img/lims-families.jpg",  cap: "Family register · pedigrees" },
-      { src: "assets/img/lims-samples.jpg",   cap: "Sample tracking · status pipeline" },
-      { src: "assets/img/lims-disorders.jpg", cap: "Disorder dictionary" },
+      { src: "assets/img/lims.jpg", cap: "Protected workspace · sign-in" },
     ],
   },
   {
@@ -479,23 +489,131 @@ const PROJECTS = [
   },
 ];
 
+/* ============================================================== FIELD LOG
+   The four systems that are actually in production somewhere, told as places
+   rather than repositories. `id` links back to the register entry, so opening
+   a panel opens the same drawer as everywhere else. `plate` is used when a
+   deployment has no publishable screenshot — a typographic panel instead of
+   a stock image, because a stand-in photograph would be a lie.
+   ========================================================================= */
+const FIELD = [
+  {
+    id: "bloodbank",
+    no: "01",
+    place: "Regional Blood Centre",
+    city: "Mirpur · Azad Kashmir",
+    role: "Forward deployed engineer",
+    line: "Five counters, one donor record. The software carries the standard operating procedure so the operator at the bench does not have to hold it in their head.",
+    shot: "assets/img/bb-screening.jpg",
+    facts: [["On site since", "2026"], ["Counters in the flow", "5"],
+            ["Departmental manuals encoded", "6"], ["Controllers shipped", "11"]],
+  },
+  {
+    id: "hmis",
+    no: "02",
+    place: "DHQ Hospital",
+    city: "Mirpur · Azad Kashmir",
+    role: "Contributing developer",
+    line: "The district headquarters hospital runs its clinical, diagnostic, pharmacy and finance operations out of one application. I worked the backend and the data layer underneath it.",
+    plate: { big: "18", label: "functional areas", note: "Appointments · Doctor · Patient History · Vital · Specimen · Labs · Medicine · Pharmacy · Accounts · Finance" },
+    facts: [["Functional areas", "18"], ["Layer", "Backend &amp; data"],
+            ["Architecture", "ASP.NET MVC areas"], ["Store", "MS SQL Server"]],
+  },
+  {
+    id: "lims",
+    no: "03",
+    place: "Genetics Laboratories",
+    city: "Quaid-e-Azam University",
+    role: "Sole developer",
+    line: "A sample is never just a barcode here. Families are modelled as real pedigrees, so every tube sits inside an inheritance pattern that the lab can actually reason about.",
+    shot: "assets/img/lims.jpg",
+    facts: [["Commissioned by", "Prof. Sundas Farooq"], ["Core subsystems", "5"],
+            ["Pedigrees", "Rendered from live relations"], ["Stack", "Django · MySQL"]],
+  },
+  {
+    id: "futurespace",
+    no: "04",
+    place: "FutureSpace",
+    city: "Mirpur · Azad Kashmir",
+    role: "Operations &amp; delivery manager",
+    line: "The software house where I ran delivery, and whose own site I designed and built — then rebuilt every page of it down to a 360 pixel phone.",
+    shot: "assets/img/futurespace.jpg",
+    facts: [["Live since", "2025"], ["Sections shipped", "8"],
+            ["Also delivered", "Matching WordPress theme"], ["QA floor", "360 px"]],
+  },
+];
+
+/* ========================================================= TECHNOLOGY MAP
+   `stack` on each project is written the way it would be written on that
+   project — "Next.js 16", "Next.js App Router", "Next.js 14". Counting those
+   strings counts spellings, not technologies: Next.js is in four systems and
+   was landing as four separate rows of one, which dropped it out of the chart
+   altogether. This folds the spellings onto one canonical name and files each
+   under the part of the stack it belongs to.
+
+   ALIASES is applied first (exact match on the trimmed string). Anything not
+   listed keeps its own name. GROUPS then decides where a canonical name sits;
+   anything ungrouped is counted but not charted.
+   ========================================================================= */
+const TECH_ALIASES = {
+  "Next.js 14": "Next.js", "Next.js 16": "Next.js", "Next.js App Router": "Next.js",
+  "React 19": "React",
+  "Django REST Framework": "Django", "Class-based views": "Django",
+  "ASP.NET Core 8 MVC": "ASP.NET", "ASP.NET MVC": "ASP.NET", "Areas architecture": "ASP.NET",
+  "Entity Framework Core": "ASP.NET", "Razor": "ASP.NET",
+  "MS SQL Server": "SQL Server",
+  "SQLite / PostgreSQL": "PostgreSQL",
+  "Docker Compose": "Docker",
+  "Gemini / OpenAI / Ollama": "Ollama",
+  "HTML / CSS": "HTML / CSS / JS", "HTML & CSS": "HTML / CSS / JS",
+  "JavaScript & TypeScript": "TypeScript",
+  "Jetpack Compose": "Kotlin", "Gradle KTS": "Kotlin", "Compose UI tests": "Kotlin", "MVVM": "Kotlin",
+  "C": "C / C++", "C++": "C / C++",
+  "WordPress theme": "WordPress", "Theme packaging": "WordPress",
+  "GSAP ScrollTrigger": "GSAP", "Motion": "GSAP",
+  "WebGL": "Three.js",
+  "Vector search": "pgvector", "Embeddings": "pgvector",
+  "Adobe Premiere Pro": "Editing & post", "After Effects": "Editing & post",
+  "Motion graphics": "Editing & post", "Colour & sound": "Editing & post",
+  "Sound design": "Editing & post", "Narrative editing": "Editing & post",
+  "Voice-over edit": "Editing & post", "Screen capture": "Editing & post",
+  "Archive footage": "Editing & post", "CapCut": "Editing & post",
+  "Adobe Illustrator": "Illustrator & Photoshop", "Photoshop": "Illustrator & Photoshop",
+  "Brand identity": "Identity systems", "Identity guide": "Identity systems",
+  "Multi-agent": "Multi-agent orchestration",
+  "Qwen 2.5": "Ollama", "PyQt6": "Python", "Python classifiers": "Python",
+  "Web Speech API": "Speech & audio", "Pose detection": "Speech & audio",
+};
+
+const TECH_GROUPS = [
+  ["Languages",              ["Python", "C#", "TypeScript", "JavaScript", "Kotlin", "SQL", "C / C++", "PHP", "HTML / CSS / JS"]],
+  ["Frameworks",             ["Django", "FastAPI", "ASP.NET", "Next.js", "React", "Node.js", "Vite", "Tailwind", "WordPress", "Flask"]],
+  ["Data & infrastructure",  ["PostgreSQL", "SQL Server", "MySQL", "SQLite", "pgvector", "Redis", "Celery", "Docker", "Alembic", "nginx", "Supabase", "Vercel"]],
+  ["AI engineering",         ["Ollama", "LangChain", "TensorFlow", "Multi-agent orchestration", "Speech & audio", "RBAC"]],
+  ["Interface & media",      ["GSAP", "Three.js", "Canvas API", "Editing & post", "Illustrator & Photoshop", "Identity systems"]],
+];
+
 /* Experience, education and capability — the Record section. */
 const EXPERIENCE = [
   { when: "Current", role: "Forward Deployed Engineer & Developer",
     org: "Regional Blood Centre (RBC) · Mirpur, Azad Kashmir",
+    where: "Mirpur, Azad Kashmir", systems: ["bloodbank", "lims"],
     points: ["Building and deploying the blood bank management system on site, working directly with collection, serology, processing and distribution staff.",
              "Concurrently developing the laboratory system for the genetics labs of Quaid-e-Azam University."] },
   { when: "Oct 2025 — Jul 2026", role: "Operational Manager & Project Manager",
     org: "FutureSpace, A Software House · Mirpur, Azad Kashmir",
+    where: "Mirpur, Azad Kashmir", systems: ["futurespace"],
     points: ["Managed multiple software projects from inception to completion, owning timelines, budgets and quality assurance.",
              "Led cross-functional teams and introduced agile practices to the delivery process."] },
   { when: "Sep — Dec 2025", role: "Technical Associate",
     org: "Network & Telecom Centre, MUST University",
+    where: "Mirpur, Azad Kashmir", systems: [],
     points: ["Backend and full-stack development in Python with a strong focus on Django; also worked within ASP.NET MVC architecture.",
              "Database design and management across MS SQL and MySQL.",
              "Collaborated with cross-functional teams to keep network services running without interruption."] },
   { when: "2024 — present", role: "Freelance Software Developer",
     org: "Independent · Fiverr, Upwork & direct clients",
+    where: "Remote · Fiverr, Upwork &amp; direct", systems: ["lims", "rms", "vendora", "hmis"],
     points: ["Designed and built a neurological lab management system in Django for Prof. Sundas Farooq.",
              "Delivered a restaurant management system and an inventory / point-of-sale platform.",
              "Contributed to the DHQ Hospital Management System in Mirpur, Azad Kashmir.",
