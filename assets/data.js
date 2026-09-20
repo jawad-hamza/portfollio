@@ -505,7 +505,7 @@ const FIELD = [
     role: "Forward deployed engineer",
     line: "Five counters, one donor record. The software carries the standard operating procedure so the operator at the bench does not have to hold it in their head.",
     shot: "assets/img/bb-screening.jpg",
-    facts: [["On site since", "2026"], ["Counters in the flow", "5"],
+    facts: [["Engagement", "Forward deployed, on site"], ["Counters in the flow", "5"],
             ["Departmental manuals encoded", "6"], ["Controllers shipped", "11"]],
   },
   {
@@ -538,8 +538,61 @@ const FIELD = [
     role: "Operations &amp; delivery manager",
     line: "The software house where I ran delivery, and whose own site I designed and built — then rebuilt every page of it down to a 360 pixel phone.",
     shot: "assets/img/futurespace.jpg",
-    facts: [["Live since", "2025"], ["Sections shipped", "8"],
+    facts: [["Status", "Live and maintained"], ["Sections shipped", "8"],
             ["Also delivered", "Matching WordPress theme"], ["QA floor", "360 px"]],
+  },
+];
+
+/* ============================================================== THE OFFER
+   What can actually be commissioned, and the entries on the register that
+   already prove it. `systems` holds register ids, so the counts under each
+   service are derived rather than asserted — if a project's status changes,
+   the claim under the service changes with it.
+   ========================================================================= */
+const SERVICES = [
+  {
+    id: "operational",
+    name: "Operational &amp; clinical systems",
+    line: "Software for places where being wrong has a cost — a blood centre, a hospital, a research lab. Built to your departmental manuals and SOPs, with the rule and its citation visible on screen, not buried in a developer's head.",
+    gets: [
+      "Requirements taken at the bench, not from a specification document",
+      "Every clinical or statutory rule encoded with its source reference",
+      "Audit trail, expiry alerts and a restore you have actually tested",
+    ],
+    systems: ["bloodbank", "lims", "hmis"],
+  },
+  {
+    id: "retail",
+    name: "Retail, POS &amp; accounts",
+    line: "The till and the books as one system. Checkout, purchases, expenses and party ledgers all post into a double-entry core, so the trial balance comes out of real sales instead of being re-keyed at month end.",
+    gets: [
+      "Barcode checkout, stock control and thermal receipts",
+      "Trial balance, profit &amp; loss and party statements generated, not typed",
+      "Tax applied from the category matrix and locked away from the cashier",
+    ],
+    systems: ["vendora", "rms", "rentacar"],
+  },
+  {
+    id: "ai",
+    name: "Private, self-hosted AI",
+    line: "Provider-neutral AI that runs on your own hardware, so an institution keeps its own data. Retrieval with citations you can check, admin-managed knowledge bases, and an audit record of what was asked and answered.",
+    gets: [
+      "Chunking, embedding and similarity search over your own documents",
+      "Answers carrying their sources, so a claim can be traced back",
+      "One compose file bringing the whole stack up on your infrastructure",
+    ],
+    systems: ["ragplat", "uniai", "aura", "chatbot", "listen"],
+  },
+  {
+    id: "web",
+    name: "Web, product &amp; brand",
+    line: "Sites and interfaces that hold up next to the product behind them — plus the identity around them when there isn't one yet. From logo grid and type scale through to a responsive build QA'd down to a 360 pixel phone.",
+    gets: [
+      "Design and front-end build, or a WordPress theme packaged for hand-off",
+      "Identity system: mark, palette, type specification, usage guide",
+      "Responsive QA on real devices, not just a desktop browser resized",
+    ],
+    systems: ["futurespace", "apex", "zehnox", "devcore", "havenworks", "edshifu"],
   },
 ];
 
@@ -595,7 +648,15 @@ const TECH_GROUPS = [
 
 /* Experience, education and capability — the Record section. */
 const EXPERIENCE = [
-  { when: "Current", role: "Forward Deployed Engineer & Developer",
+  /* `now` takes the accent NOW pill — exactly one entry may carry it.
+     `current` marks the other engagements still running, so a concurrent
+     role reads as ongoing without competing for the headline. */
+  { when: "Current", now: true, role: "COO &amp; CTO",
+    org: "ZEHNOX", url: "https://www.zehnox.com", urlLabel: "zehnox.com",
+    where: "Mirpur, Azad Kashmir", systems: ["zehnox"],
+    points: ["Leading operations and technical direction — delivery standards, engineering practice and the systems the studio ships.",
+             "Owning the technology decisions behind client work end to end, from architecture through to what actually goes live."] },
+  { when: "Current", current: true, role: "Forward Deployed Engineer & Developer",
     org: "Regional Blood Centre (RBC) · Mirpur, Azad Kashmir",
     where: "Mirpur, Azad Kashmir", systems: ["bloodbank", "lims"],
     points: ["Building and deploying the blood bank management system on site, working directly with collection, serology, processing and distribution staff.",
@@ -621,10 +682,10 @@ const EXPERIENCE = [
 ];
 
 const EDUCATION = [
-  { when: "Expected 2030", role: "BSc Computer Science",
+  { when: "In progress", role: "BSc Computer Science",
     org: "Virtual University · Mirpur, Azad Kashmir",
     points: ["In progress alongside full-time development work."] },
-  { when: "Completing Oct 2026", role: "Google Data Science & AI Program",
+  { when: "In progress", role: "Google Data Science & AI Program",
     org: "Coursera",
     points: ["Applied data science and machine learning foundations."] },
 ];

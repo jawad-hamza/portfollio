@@ -354,6 +354,51 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .code{font-family:var(--mono);font-size:.55rem;letter-spacing:.13em;color:var(--faint);
   text-transform:uppercase}
 
+/* ============================================================== THE OFFER
+   The pitch, placed before the register so a visitor meets what can be
+   commissioned before they meet the archive. Two columns of tall cards, each
+   closing on the register entries that already stand behind it.
+   ========================================================================= */
+.offer{position:relative;z-index:2;background:var(--ground-2);
+  border-block:1px solid var(--line);
+  padding-block:clamp(3rem,9vh,7rem)}
+.offer__grid{display:grid;grid-template-columns:1fr;gap:clamp(1rem,2.2vw,1.6rem);
+  margin-top:clamp(1.4rem,4vh,2.4rem)}
+@media (min-width:900px){ .offer__grid{grid-template-columns:repeat(2,1fr)} }
+
+.svc{display:flex;flex-direction:column;
+  border:1px solid var(--line);border-radius:14px;background:var(--raise);
+  padding:clamp(1.2rem,2.6vw,1.9rem);
+  transition:border-color .45s,background .45s}
+.svc:hover{border-color:var(--accent-line);background:var(--raise-2)}
+.svc__h{display:flex;align-items:baseline;gap:.75rem;
+  padding-bottom:.85rem;margin-bottom:1rem;border-bottom:1px solid var(--line-soft)}
+.svc__n{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:var(--accent);
+  font-variant-numeric:tabular-nums;flex:none}
+.svc__h h3{font-size:clamp(1.1rem,2.1vw,1.65rem);letter-spacing:-.035em;line-height:1.08;
+  text-transform:uppercase}
+.svc__line{font-size:clamp(.92rem,1.15vw,1.02rem);font-weight:300;line-height:1.6;
+  color:var(--text-dim);max-width:52ch}
+
+.svc__gets{list-style:none;margin:1.1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.svc__gets li{display:flex;gap:.65rem;font-size:.88rem;font-weight:300;line-height:1.45;
+  color:var(--muted)}
+.svc__gets li::before{content:"";width:5px;height:5px;margin-top:.52rem;flex:none;
+  border:1px solid var(--accent);border-radius:50%}
+
+/* the claim above is only worth what the register underneath it holds */
+.svc__proof{margin-top:auto;padding-top:1.1rem;
+  border-top:1px solid var(--line-soft)}
+.svc__proofk{display:block;font-family:var(--mono);font-size:.53rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:.65rem}
+.svc__sys{display:flex;flex-wrap:wrap;gap:.4rem}
+/* .syschip is shared with the time stack — defined once, near .tcard */
+
+@media (max-width:600px){
+  .svc{padding:1.1rem}
+  .svc__line{font-size:.9rem}
+}
+
 /* ============================================================ INDEX LIST */
 .sect{padding-block:clamp(3rem,9vh,7rem);position:relative;z-index:2;background:var(--ground)}
 .sect--edge{border-top:1px solid var(--line)}
@@ -613,8 +658,6 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   background:var(--ground);opacity:var(--dim)}
 .tcard__bar{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
   padding:.72rem 1.1rem;border-bottom:1px solid var(--line-soft);background:var(--raise-2)}
-.tcard__when{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--accent)}
 .tcard__i{margin-left:auto;font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;
   color:var(--faint);font-variant-numeric:tabular-nums}
 .tcard__now{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.14em;
@@ -631,18 +674,19 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   display:flex;gap:.6rem}
 .tcard li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--accent);
   margin-top:.62rem;flex:none}
-/* the year, set huge and faint behind the card — the card is the content,
-   this is just the period it belongs to, readable at a glance while scrolling */
-/* sized and centred to sit wholly inside the card — bleeding it off the top
-   edge just looked like clipped text rather than a deliberate crop */
-.tcard__year{position:absolute;top:50%;right:clamp(.6rem,2vw,1.4rem);translate:0 -50%;
-  z-index:0;pointer-events:none;
-  font-family:var(--display);font-weight:800;letter-spacing:-.06em;line-height:.9;
-  font-size:clamp(3.2rem,8vw,6.5rem);color:var(--text);opacity:.05}
-.tcard.is-now .tcard__year{color:var(--accent);opacity:.09}
 .tcard__bar,.tcard__in{position:relative;z-index:1}
 .tcard__where{font-family:var(--mono);font-size:.55rem;letter-spacing:.13em;
   text-transform:uppercase;color:var(--faint)}
+/* a second role that is still running, marked without competing with NOW */
+.tcard__cur{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--live);border:1px solid var(--live);
+  padding:.18rem .42rem;border-radius:20px;line-height:1}
+.tcard__url{display:inline-flex;align-items:center;gap:.28rem;margin-left:.6rem;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;color:var(--accent);
+  text-decoration:none;border-bottom:1px solid var(--accent-line);
+  transition:border-color .3s}
+.tcard__url:hover{border-color:var(--accent)}
+.tcard__url i{font-style:normal;font-size:.72rem;line-height:1}
 .tcard.is-now{border-color:var(--accent-line)}
 
 /* what came out of the period, linked to the register entry itself */
@@ -679,6 +723,10 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
 .stat__v{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,5vw,3.6rem);
   letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums}
 .stat__n{font-size:.83rem;color:var(--muted);line-height:1.45}
+/* a figure that is a word, not a count — same weight in the row, but it
+   does not want tabular figures or the full numeral size */
+.stat__v--word{font-size:clamp(1.8rem,3.6vw,2.6rem);letter-spacing:-.035em}
+
 
 /* ======================================================== TECHNOLOGY SPREAD
    A tally rather than a bar chart. Every row lays out all 32 systems as
@@ -797,10 +845,6 @@ kbd{font-family:var(--mono);font-size:.53rem;border:1px solid var(--line-strong)
   background:var(--raise);padding:clamp(1.1rem,2.4vw,1.6rem);
   transition:border-color .4s,background .4s}
 .ed:hover{border-color:var(--accent-line);background:var(--raise-2)}
-.ed__yr{position:absolute;top:50%;right:clamp(.6rem,2vw,1.2rem);translate:0 -50%;z-index:0;
-  pointer-events:none;font-family:var(--display);font-weight:800;letter-spacing:-.06em;
-  line-height:.9;font-size:clamp(3rem,7vw,5.5rem);color:var(--text);opacity:.05}
-.ed > :not(.ed__yr){position:relative;z-index:1}
 .ed__when{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;
   color:var(--accent);display:block;margin-bottom:.5rem}
 .ed h3{font-size:clamp(1rem,1.7vw,1.3rem);letter-spacing:-.028em;line-height:1.1;

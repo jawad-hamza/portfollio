@@ -185,6 +185,41 @@ const stampHTML = p => {
   return `<span class="stamp stamp--${s.tone}">${s.label}</span>`;
 };
 
+/* ============================================================== THE OFFER
+   Four things that can be commissioned. Each one closes with the register
+   entries that already prove it — counted from PROJECTS, so the number under
+   a service can never drift away from what the index below actually holds.
+   ========================================================================= */
+function buildServices() {
+  const host = $("#offer"); if (!host) return;
+
+  host.innerHTML = SERVICES.map((s, i) => {
+    const built = s.systems.map(id => byId[id]).filter(Boolean);
+    const live = built.filter(p => p.status === "production").length;
+    const proof = live
+      ? `${built.length} on the register · ${live} in production`
+      : `${built.length} on the register`;
+    return `
+    <article class="svc" data-up>
+      <div class="svc__h">
+        <span class="svc__n">${String(i + 1).padStart(2, "0")}</span>
+        <h3>${s.name}</h3>
+      </div>
+      <p class="svc__line">${s.line}</p>
+      <ul class="svc__gets">${s.gets.map(g => `<li>${g}</li>`).join("")}</ul>
+      <div class="svc__proof">
+        <span class="svc__proofk">${esc(proof)}</span>
+        <div class="svc__sys">${built.map(p => `
+          <button class="syschip" data-open="${p.id}" data-cursor="Open"
+                  aria-label="Open ${esc(p.name)}">
+            <i class="syschip__d tone--${STATUS[p.status].tone}" aria-hidden="true"></i>
+            ${esc(p.name)}
+          </button>`).join("")}</div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
 /* ============================================================== INDEX LIST */
 const ALL_INTRO = "Five registers, filtered in place. Pick one to read what it covers.";
 
@@ -626,32 +661,27 @@ function buildStack() {
   const host = $("#stackRun"); if (!host) return;
   const list = [...EXPERIENCE].reverse();          // oldest at the back, current on top
   const total = String(list.length).padStart(2, "0");
-  /* Watermark year: the LAST year the period touches, not the first. Two of
-     these periods begin in 2025, and stamping 2025 on both reads as a mistake;
-     taking the closing year gives an ascending 2024 / 2025 / 2026 / Now. */
-  const yearOf = e => {
-    const ys = String(e.when).match(/\d{4}/g);
-    return ys ? ys[ys.length - 1] : "Now";
-  };
-
   host.innerHTML = list.map((e, i) => {
-    const now = /^current$/i.test(e.when);
+    /* an explicit flag, not a date string: two roles run concurrently and
+       only one of them is the headline */
+    const now = !!e.now;
     /* Each role names the systems that came out of it, and each one opens the
        same drawer as the register — so a claim on the CV is one click from
        the thing itself rather than something you have to take on trust. */
     const built = (e.systems || []).map(id => byId[id]).filter(Boolean);
     return `
     <article class="tcard${now ? " is-now" : ""}" style="--i:${i}">
-      <span class="tcard__year" aria-hidden="true">${esc(yearOf(e))}</span>
       <div class="tcard__bar">
-        <span class="tcard__when">${esc(e.when)}</span>
         ${now ? `<span class="tcard__now">Now</span>` : ""}
+        ${!now && e.current ? `<span class="tcard__cur">Current</span>` : ""}
         ${e.where ? `<span class="tcard__where">${e.where}</span>` : ""}
         <span class="tcard__i">${String(i + 1).padStart(2, "0")} / ${total}</span>
       </div>
       <div class="tcard__in">
         <h3>${e.role}</h3>
-        <span class="tcard__org">${e.org}</span>
+        <span class="tcard__org">${e.org}${e.url ? `
+          <a class="tcard__url" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer"
+             data-cursor="Visit">${esc(e.urlLabel || e.url)}<i aria-hidden="true">&#8599;</i></a>` : ""}</span>
         <ul>${e.points.map(p => `<li>${p}</li>`).join("")}</ul>
         ${built.length ? `
           <div class="tcard__out">
@@ -1090,10 +1120,8 @@ function renderRecord() {
   /* ---- education ---- */
   const edu = $("#education");
   if (edu) edu.innerHTML = EDUCATION.map(e => {
-    const yr = (String(e.when).match(/\d{4}/) || [""])[0];
     return `
     <article class="ed" data-up>
-      <span class="ed__yr" aria-hidden="true">${esc(yr)}</span>
       <span class="ed__when">${esc(e.when)}</span>
       <h3>${e.role}</h3>
       <span class="ed__org">${e.org}</span>
@@ -1108,6 +1136,7 @@ function init() {
   renderFigures();
   renderRecord();
   renderSpread();
+  buildServices();
   buildIndex();
   buildField();
   buildStack();
